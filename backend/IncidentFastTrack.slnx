@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="IncidentFastTrack.Api.Tests/IncidentFastTrack.Api.Tests.csproj" />
+  <Project Path="IncidentFastTrack.Api/IncidentFastTrack.Api.csproj" />
+</Solution>
