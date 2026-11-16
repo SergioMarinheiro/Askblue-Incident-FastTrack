@@ -1,9 +1,27 @@
+using FirstStep.Interfaces;
+using FirstStep.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddControllers();
 
-var app = builder.Build();
-app.UseHttpsRedirection();
-app.MapControllers();
-app.Run();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-public partial class Program { }
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
