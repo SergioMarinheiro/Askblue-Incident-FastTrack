@@ -1,6 +1,6 @@
-using FirstStep.DTOs.Auth;
+using ApiIncidentFastTrack.DTOs.Auth;
 
-namespace FirstStep.Interfaces;
+namespace ApiIncidentFastTrack.Interfaces;
 
 public interface IAuthService
 {
