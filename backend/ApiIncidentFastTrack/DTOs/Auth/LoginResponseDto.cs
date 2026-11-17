@@ -1,4 +1,4 @@
-namespace FirstStep.DTOs.Auth;
+namespace ApiIncidentFastTrack.DTOs.Auth;
 
 public class LoginResponseDto
 {

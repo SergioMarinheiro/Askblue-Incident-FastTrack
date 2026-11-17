@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using FirstStep.DTOs.Auth;
-using FirstStep.Interfaces;
-using FirstStep.Services;
+using ApiIncidentFastTrack.DTOs.Auth;
+using ApiIncidentFastTrack.Interfaces;
+using ApiIncidentFastTrack.Services;
 
-namespace FirstStep.Controllers;
+namespace ApiIncidentFastTrack.Controllers;
 
 
 // ==========================================
@@ -48,56 +48,3 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 }
-
-// // ==========================================
-// // 2. USERS CONTROLLER (/api/users)
-// // Handles both regular users and admins via the Role property
-// // ==========================================
-// [ApiController]
-// [Route("api/[controller]")]
-// public class UsersController : ControllerBase
-// {
-//     [HttpGet]
-//     public ActionResult<IEnumerable<User>> GetUsers()
-//     {
-//         // Logic to return all users (including admins)
-//     }
-
-//     [HttpGet("{id:int}")]
-//     public ActionResult<User> GetUserById(int id)
-//     {
-//         // Logic to return a specific user by ID
-//     }
-
-//     [HttpPost]
-//     public ActionResult<User> CreateUser([FromBody] User user)
-//     {
-//         // Logic to create a user (user.Role defines if they are "User" or "Admin")
-//     }
-// }
-
-// // ==========================================
-// // 3. INCIDENTS CONTROLLER (/api/incidents)
-// // ==========================================
-// [ApiController]
-// [Route("api/[controller]")]
-// public class IncidentsController : ControllerBase
-// {
-//     [HttpGet]
-//     public ActionResult<IEnumerable<Incident>> GetIncidents()
-//     {
-//         // Logic to return all incidents
-//     }
-
-//     [HttpGet("{id:int}")]
-//     public ActionResult<Incident> GetIncidentById(int id)
-//     {
-//         // Logic to return a specific incident by ID
-//     }
-
-//     [HttpPost]
-//     public ActionResult<Incident> CreateIncident([FromBody] Incident incident)
-//     {
-//         // Logic to create a new incident
-//     }
-// }
