@@ -2,7 +2,6 @@ using ApiIncidentFastTrack.Enums;
 
 namespace ApiIncidentFastTrack.DTOs.Users;
 
-// Activation is changed through the deactivate/activate endpoints, not here.
 public class UpdateUserRequestDto
 {
     public string FirstName { get; set; } = string.Empty;

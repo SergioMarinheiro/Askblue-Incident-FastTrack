@@ -8,7 +8,7 @@ public class IncidentHistoryConfiguration : IEntityTypeConfiguration<IncidentHis
 {
     public void Configure(EntityTypeBuilder<IncidentHistory> builder)
     {
-        builder.HasKey(h => h.IncidentHistoryId);
+        builder.HasKey(h => h.Id);
 
         builder.Property(h => h.FieldName).IsRequired().HasMaxLength(100);
         builder.Property(h => h.OldValue).HasMaxLength(4000);

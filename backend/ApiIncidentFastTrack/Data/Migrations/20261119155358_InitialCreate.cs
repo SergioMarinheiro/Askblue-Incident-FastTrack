@@ -15,34 +15,38 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "Companies",
                 columns: table => new
                 {
-                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Companies", x => x.CompanyId);
+                    table.PrimaryKey("PK_Companies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ResolutionTypes",
                 columns: table => new
                 {
-                    ResolutionTypeId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    RequiresPayment = table.Column<bool>(type: "bit", nullable: false)
+                    RequiresPayment = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResolutionTypes", x => x.ResolutionTypeId);
+                    table.PrimaryKey("PK_ResolutionTypes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ResolutionTypes_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -50,20 +54,24 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "Stores",
                 columns: table => new
                 {
-                    StoreId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stores", x => x.StoreId);
+                    table.PrimaryKey("PK_Stores", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Stores_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -71,24 +79,27 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Users_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -96,19 +107,23 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "Locations",
                 columns: table => new
                 {
-                    LocationId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StoreId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Locations", x => x.LocationId);
+                    table.PrimaryKey("PK_Locations", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Locations_Stores_StoreId",
                         column: x => x.StoreId,
                         principalTable: "Stores",
-                        principalColumn: "StoreId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -116,7 +131,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "Incidents",
                 columns: table => new
                 {
-                    IncidentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: false),
@@ -130,54 +145,54 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     IncidentType = table.Column<int>(type: "int", nullable: true),
                     IncidentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ClosedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RejectionReason = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CustomerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CustomerAddress = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CustomerEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     CustomerPhone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    EstimatedCompensationAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true)
+                    EstimatedCompensationAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Incidents", x => x.IncidentId);
+                    table.PrimaryKey("PK_Incidents", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Incidents_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Incidents_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "LocationId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Incidents_ResolutionTypes_ResolutionTypeId",
                         column: x => x.ResolutionTypeId,
                         principalTable: "ResolutionTypes",
-                        principalColumn: "ResolutionTypeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Incidents_Stores_StoreId",
                         column: x => x.StoreId,
                         principalTable: "Stores",
-                        principalColumn: "StoreId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Incidents_Users_ClosedByUserId",
                         column: x => x.ClosedByUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Incidents_Users_CreatedByUserId",
                         column: x => x.CreatedByUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -185,29 +200,30 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "IncidentAttachments",
                 columns: table => new
                 {
-                    IncidentAttachmentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IncidentId = table.Column<int>(type: "int", nullable: false),
                     UploadedByUserId = table.Column<int>(type: "int", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(260)", maxLength: 260, nullable: false),
                     StoragePath = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     ContentType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IncidentAttachments", x => x.IncidentAttachmentId);
+                    table.PrimaryKey("PK_IncidentAttachments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_IncidentAttachments_Incidents_IncidentId",
                         column: x => x.IncidentId,
                         principalTable: "Incidents",
-                        principalColumn: "IncidentId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IncidentAttachments_Users_UploadedByUserId",
                         column: x => x.UploadedByUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -215,27 +231,28 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "IncidentComments",
                 columns: table => new
                 {
-                    IncidentCommentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IncidentId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IncidentComments", x => x.IncidentCommentId);
+                    table.PrimaryKey("PK_IncidentComments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_IncidentComments_Incidents_IncidentId",
                         column: x => x.IncidentId,
                         principalTable: "Incidents",
-                        principalColumn: "IncidentId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IncidentComments_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -243,37 +260,38 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "IncidentDuplicates",
                 columns: table => new
                 {
-                    IncidentDuplicateId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IncidentId = table.Column<int>(type: "int", nullable: false),
                     PotentialDuplicateIncidentId = table.Column<int>(type: "int", nullable: false),
-                    DetectedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DetectionScore = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: true),
                     ReviewStatus = table.Column<int>(type: "int", nullable: false),
                     ReviewedByUserId = table.Column<int>(type: "int", nullable: true),
                     ReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Justification = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
+                    Justification = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IncidentDuplicates", x => x.IncidentDuplicateId);
+                    table.PrimaryKey("PK_IncidentDuplicates", x => x.Id);
                     table.ForeignKey(
                         name: "FK_IncidentDuplicates_Incidents_IncidentId",
                         column: x => x.IncidentId,
                         principalTable: "Incidents",
-                        principalColumn: "IncidentId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IncidentDuplicates_Incidents_PotentialDuplicateIncidentId",
                         column: x => x.PotentialDuplicateIncidentId,
                         principalTable: "Incidents",
-                        principalColumn: "IncidentId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_IncidentDuplicates_Users_ReviewedByUserId",
                         column: x => x.ReviewedByUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -281,7 +299,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "IncidentHistory",
                 columns: table => new
                 {
-                    IncidentHistoryId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IncidentId = table.Column<int>(type: "int", nullable: false),
                     ChangedByUserId = table.Column<int>(type: "int", nullable: false),
@@ -289,22 +307,23 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     FieldName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OldValue = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     NewValue = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
-                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IncidentHistory", x => x.IncidentHistoryId);
+                    table.PrimaryKey("PK_IncidentHistory", x => x.Id);
                     table.ForeignKey(
                         name: "FK_IncidentHistory_Incidents_IncidentId",
                         column: x => x.IncidentId,
                         principalTable: "Incidents",
-                        principalColumn: "IncidentId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IncidentHistory_Users_ChangedByUserId",
                         column: x => x.ChangedByUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -413,7 +432,8 @@ namespace ApiIncidentFastTrack.Data.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
-                unique: true);
+                unique: true,
+                filter: "[IsDeleted] = 0");
         }
 
         /// <inheritdoc />

@@ -24,29 +24,35 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.Company", b =>
                 {
-                    b.Property<int>("CompanyId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.HasKey("CompanyId");
+                    b.HasKey("Id");
 
                     b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.Incident", b =>
                 {
-                    b.Property<int>("IncidentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncidentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("ClosedAt")
                         .HasColumnType("datetime2");
@@ -97,6 +103,9 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("Priority")
                         .HasColumnType("int");
 
@@ -117,10 +126,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("IncidentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ClosedByUserId");
 
@@ -139,16 +145,19 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.IncidentAttachment", b =>
                 {
-                    b.Property<int>("IncidentAttachmentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncidentAttachmentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -158,18 +167,18 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int>("IncidentId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("StoragePath")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("UploadedByUserId")
                         .HasColumnType("int");
 
-                    b.HasKey("IncidentAttachmentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("IncidentId");
 
@@ -180,11 +189,11 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.IncidentComment", b =>
                 {
-                    b.Property<int>("IncidentCommentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncidentCommentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -197,10 +206,13 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int>("IncidentId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("IncidentCommentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("IncidentId");
 
@@ -211,13 +223,13 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.IncidentDuplicate", b =>
                 {
-                    b.Property<int>("IncidentDuplicateId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncidentDuplicateId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DetectedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("DetectionScore")
@@ -231,6 +243,9 @@ namespace ApiIncidentFastTrack.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("PotentialDuplicateIncidentId")
                         .HasColumnType("int");
 
@@ -243,7 +258,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int?>("ReviewedByUserId")
                         .HasColumnType("int");
 
-                    b.HasKey("IncidentDuplicateId");
+                    b.HasKey("Id");
 
                     b.HasIndex("PotentialDuplicateIncidentId");
 
@@ -257,20 +272,20 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.IncidentHistory", b =>
                 {
-                    b.Property<int>("IncidentHistoryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncidentHistoryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<Guid>("ChangeSetId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("ChangedByUserId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FieldName")
                         .IsRequired()
@@ -280,6 +295,9 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int>("IncidentId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("NewValue")
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
@@ -288,7 +306,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
-                    b.HasKey("IncidentHistoryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ChangeSetId");
 
@@ -301,11 +319,23 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.Location", b =>
                 {
-                    b.Property<int>("LocationId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LocationId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -315,7 +345,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
-                    b.HasKey("LocationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("StoreId");
 
@@ -324,18 +354,24 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.ResolutionType", b =>
                 {
-                    b.Property<int>("ResolutionTypeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResolutionTypeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -345,7 +381,7 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<bool>("RequiresPayment")
                         .HasColumnType("bit");
 
-                    b.HasKey("ResolutionTypeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
 
@@ -354,11 +390,11 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.Store", b =>
                 {
-                    b.Property<int>("StoreId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StoreId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .HasMaxLength(500)
@@ -367,12 +403,24 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.HasKey("StoreId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
 
@@ -381,14 +429,20 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -400,13 +454,16 @@ namespace ApiIncidentFastTrack.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -416,12 +473,13 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Users");
                 });

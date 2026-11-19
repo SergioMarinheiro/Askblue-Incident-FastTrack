@@ -1,11 +1,15 @@
+using ApiIncidentFastTrack.Interfaces;
+
 namespace ApiIncidentFastTrack.Models;
 
-public class Location
+public class Location : BaseDomainModel, ISoftDeletable
 {
-    public int LocationId { get; set; }
     public int StoreId { get; set; }
 
     public string Name { get; set; } = string.Empty;
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public Store Store { get; set; } = null!;
 

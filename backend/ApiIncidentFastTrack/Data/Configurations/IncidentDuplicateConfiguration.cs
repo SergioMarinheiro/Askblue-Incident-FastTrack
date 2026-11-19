@@ -8,7 +8,7 @@ public class IncidentDuplicateConfiguration : IEntityTypeConfiguration<IncidentD
 {
     public void Configure(EntityTypeBuilder<IncidentDuplicate> builder)
     {
-        builder.HasKey(d => d.IncidentDuplicateId);
+        builder.HasKey(d => d.Id);
 
         builder.Property(d => d.DetectionScore).HasPrecision(5, 2);
         builder.Property(d => d.Justification).HasMaxLength(1000);

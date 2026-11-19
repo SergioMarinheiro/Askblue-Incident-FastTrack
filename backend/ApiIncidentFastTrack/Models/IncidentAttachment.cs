@@ -1,17 +1,14 @@
 namespace ApiIncidentFastTrack.Models;
 
-public class IncidentAttachment
+// CreatedAt (from the base) is the upload time.
+public class IncidentAttachment : BaseDomainModel
 {
-    public int IncidentAttachmentId { get; set; }
-
     public int IncidentId { get; set; }
     public int UploadedByUserId { get; set; }
 
     public string FileName { get; set; } = string.Empty;
     public string StoragePath { get; set; } = string.Empty;
     public string ContentType { get; set; } = string.Empty;
-
-    public DateTime UploadedAt { get; set; }
 
     // Navigation properties
     public Incident Incident { get; set; } = null!;

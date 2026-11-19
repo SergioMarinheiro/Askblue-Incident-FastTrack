@@ -18,9 +18,6 @@ public class UserService : IUserService
     public Task<UserResponseDto> UpdateUserAsync(int userId, UpdateUserRequestDto request, CancellationToken cancellationToken)
         => throw new NotImplementedException();
 
-    public Task<UserResponseDto> DeactivateUserAsync(int userId, CancellationToken cancellationToken)
-        => throw new NotImplementedException();
-
-    public Task<UserResponseDto> ActivateUserAsync(int userId, CancellationToken cancellationToken)
+    public Task DeleteUserAsync(int userId, CancellationToken cancellationToken)
         => throw new NotImplementedException();
 }

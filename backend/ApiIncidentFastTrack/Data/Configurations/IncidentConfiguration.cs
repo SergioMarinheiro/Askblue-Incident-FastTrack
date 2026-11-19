@@ -8,7 +8,7 @@ public class IncidentConfiguration : IEntityTypeConfiguration<Incident>
 {
     public void Configure(EntityTypeBuilder<Incident> builder)
     {
-        builder.HasKey(i => i.IncidentId);
+        builder.HasKey(i => i.Id);
 
         // Only CustomerName is required at the database level (drafts).
         // "Required on submit" is enforced in the service, not here.

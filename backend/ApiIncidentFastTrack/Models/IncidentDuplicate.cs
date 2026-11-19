@@ -2,14 +2,11 @@ using ApiIncidentFastTrack.Enums;
 
 namespace ApiIncidentFastTrack.Models;
 
-public class IncidentDuplicate
+// CreatedAt (from the base) is when the possible duplicate was detected.
+public class IncidentDuplicate : BaseDomainModel
 {
-    public int IncidentDuplicateId { get; set; }
-
     public int IncidentId { get; set; }
     public int PotentialDuplicateIncidentId { get; set; }
-
-    public DateTime DetectedAt { get; set; }
 
     public decimal? DetectionScore { get; set; }
 

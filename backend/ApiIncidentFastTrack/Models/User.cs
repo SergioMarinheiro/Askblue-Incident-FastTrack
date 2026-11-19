@@ -1,12 +1,12 @@
 using ApiIncidentFastTrack.Enums;
+using ApiIncidentFastTrack.Interfaces;
 
 namespace ApiIncidentFastTrack.Models;
 
-public class User
+public class User : BaseDomainModel, ISoftDeletable
 {
-    public int UserId { get; set; }
-
-    public int CompanyId { get; set; }
+    // Null only for SuperAdmin (AskBlue platform staff, no company)
+    public int? CompanyId { get; set; }
 
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -15,7 +15,10 @@ public class User
 
     public UserRole Role { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    // Soft delete: a deleted user can't log in and is hidden from lists,
+    // but stays referenced by their incidents, comments and history.
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     // Navigation properties
     public Company? Company { get; set; }

@@ -6,7 +6,7 @@ namespace ApiIncidentFastTrack.Controllers;
 
 // List/get: Manager, Admin (own company), SuperAdmin.
 // Create/update: Admin (own company), SuperAdmin.
-// Deactivate/activate: Manager (Staff only), Admin (any user in own company), SuperAdmin (any user).
+// Delete (soft): Manager (Staff only), Admin (any user in own company), SuperAdmin (any user).
 [ApiController]
 [Route("api/users")]
 public class UserController : ControllerBase
@@ -54,19 +54,11 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost("{userId:int}/deactivate")]
-    public async Task<IActionResult> DeactivateUser(int userId, CancellationToken cancellationToken)
+    [HttpDelete("{userId:int}")]
+    public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
     {
-        var user = await _userService.DeactivateUserAsync(userId, cancellationToken);
+        await _userService.DeleteUserAsync(userId, cancellationToken);
 
-        return Ok(user);
-    }
-
-    [HttpPost("{userId:int}/activate")]
-    public async Task<IActionResult> ActivateUser(int userId, CancellationToken cancellationToken)
-    {
-        var user = await _userService.ActivateUserAsync(userId, cancellationToken);
-
-        return Ok(user);
+        return NoContent();
     }
 }
