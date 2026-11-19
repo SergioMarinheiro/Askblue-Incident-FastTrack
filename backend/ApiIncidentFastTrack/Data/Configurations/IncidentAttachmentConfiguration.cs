@@ -8,7 +8,7 @@ public class IncidentAttachmentConfiguration : IEntityTypeConfiguration<Incident
 {
     public void Configure(EntityTypeBuilder<IncidentAttachment> builder)
     {
-        builder.HasKey(a => a.IncidentAttachmentId);
+        builder.HasKey(a => a.Id);
 
         builder.Property(a => a.FileName).IsRequired().HasMaxLength(260);
         builder.Property(a => a.StoragePath).IsRequired().HasMaxLength(1000);

@@ -8,7 +8,7 @@ public class ResolutionTypeConfiguration : IEntityTypeConfiguration<ResolutionTy
 {
     public void Configure(EntityTypeBuilder<ResolutionType> builder)
     {
-        builder.HasKey(r => r.ResolutionTypeId);
+        builder.HasKey(r => r.Id);
 
         builder.Property(r => r.Name).IsRequired().HasMaxLength(100);
         builder.Property(r => r.Description).HasMaxLength(500);

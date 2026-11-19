@@ -1,9 +1,8 @@
 namespace ApiIncidentFastTrack.Models;
 
-public class IncidentHistory
+// CreatedAt (from the base) is when the change was made.
+public class IncidentHistory : BaseDomainModel
 {
-    public int IncidentHistoryId { get; set; }
-
     public int IncidentId { get; set; }
     public int ChangedByUserId { get; set; }
 
@@ -12,8 +11,6 @@ public class IncidentHistory
     public string FieldName { get; set; } = string.Empty;
     public string? OldValue { get; set; }
     public string? NewValue { get; set; }
-
-    public DateTime ChangedAt { get; set; }
 
     // Navigation properties
     public Incident Incident { get; set; } = null!;

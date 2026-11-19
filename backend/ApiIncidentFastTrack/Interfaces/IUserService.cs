@@ -9,6 +9,6 @@ public interface IUserService
     Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto request, CancellationToken cancellationToken);
     Task<UserResponseDto> UpdateUserAsync(int userId, UpdateUserRequestDto request, CancellationToken cancellationToken);
 
-    Task<UserResponseDto> DeactivateUserAsync(int userId, CancellationToken cancellationToken);
-    Task<UserResponseDto> ActivateUserAsync(int userId, CancellationToken cancellationToken);
+    // Soft delete (IsDeleted/DeletedAt). The user can no longer log in and is hidden from lists.
+    Task DeleteUserAsync(int userId, CancellationToken cancellationToken);
 }

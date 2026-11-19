@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiIncidentFastTrack.Controllers;
 
 // Read: anyone in the company (to pick a store/location on an incident).
-// Create: Admin (own company) and SuperAdmin.
+// Create and delete (soft): Admin (own company) and SuperAdmin.
 [ApiController]
 [Route("api/stores")]
 public class StoreController : ControllerBase
@@ -45,6 +45,14 @@ public class StoreController : ControllerBase
         );
     }
 
+    [HttpDelete("{storeId:int}")]
+    public async Task<IActionResult> DeleteStore(int storeId, CancellationToken cancellationToken)
+    {
+        await _storeService.DeleteStoreAsync(storeId, cancellationToken);
+
+        return NoContent();
+    }
+
     [HttpGet("{storeId:int}/locations")]
     public async Task<IActionResult> GetLocations(int storeId, CancellationToken cancellationToken)
     {
@@ -63,5 +71,13 @@ public class StoreController : ControllerBase
             new { storeId },
             location
         );
+    }
+
+    [HttpDelete("{storeId:int}/locations/{locationId:int}")]
+    public async Task<IActionResult> DeleteLocation(int storeId, int locationId, CancellationToken cancellationToken)
+    {
+        await _storeService.DeleteLocationAsync(storeId, locationId, cancellationToken);
+
+        return NoContent();
     }
 }

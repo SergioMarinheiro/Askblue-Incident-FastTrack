@@ -2,10 +2,8 @@ using ApiIncidentFastTrack.Enums;
 
 namespace ApiIncidentFastTrack.Models;
 
-public class Incident
+public class Incident : BaseDomainModel
 {
-    public int IncidentId { get; set; }
-
     // Relationships
     public int CompanyId { get; set; }
     public int CreatedByUserId { get; set; }
@@ -25,8 +23,6 @@ public class Incident
     public IncidentType? IncidentType { get; set; }
 
     public DateTime? IncidentDate { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
     public DateTime? ClosedAt { get; set; }
 
     // Set only when a Manager/Admin rejects the incident (required at that moment, enforced in the service)

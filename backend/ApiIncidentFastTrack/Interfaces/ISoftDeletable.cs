@@ -1,4 +1,4 @@
-﻿namespace ApiIncidentFastTrack.Interfaces;
+namespace ApiIncidentFastTrack.Interfaces;
 
 public interface ISoftDeletable
 {

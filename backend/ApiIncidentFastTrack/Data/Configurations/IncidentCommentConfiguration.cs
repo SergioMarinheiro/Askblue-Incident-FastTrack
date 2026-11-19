@@ -8,7 +8,7 @@ public class IncidentCommentConfiguration : IEntityTypeConfiguration<IncidentCom
 {
     public void Configure(EntityTypeBuilder<IncidentComment> builder)
     {
-        builder.HasKey(c => c.IncidentCommentId);
+        builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Content).IsRequired().HasMaxLength(4000);
 

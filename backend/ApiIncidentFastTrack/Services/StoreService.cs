@@ -15,9 +15,15 @@ public class StoreService : IStoreService
     public Task<StoreResponseDto> CreateStoreAsync(CreateStoreRequestDto request, CancellationToken cancellationToken)
         => throw new NotImplementedException();
 
+    public Task DeleteStoreAsync(int storeId, CancellationToken cancellationToken)
+        => throw new NotImplementedException();
+
     public Task<IEnumerable<LocationResponseDto>> GetLocationsAsync(int storeId, CancellationToken cancellationToken)
         => throw new NotImplementedException();
 
     public Task<LocationResponseDto> CreateLocationAsync(int storeId, CreateLocationRequestDto request, CancellationToken cancellationToken)
+        => throw new NotImplementedException();
+
+    public Task DeleteLocationAsync(int storeId, int locationId, CancellationToken cancellationToken)
         => throw new NotImplementedException();
 }

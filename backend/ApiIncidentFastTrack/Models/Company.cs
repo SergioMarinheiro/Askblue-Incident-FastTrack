@@ -1,9 +1,7 @@
 namespace ApiIncidentFastTrack.Models;
 
-public class Company
+public class Company : BaseDomainModel
 {
-    public int CompanyId { get; set; }
-
     public string Name { get; set; } = string.Empty;
 
     // Navigation properties

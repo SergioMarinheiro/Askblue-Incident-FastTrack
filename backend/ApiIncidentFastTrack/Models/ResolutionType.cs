@@ -1,9 +1,7 @@
 namespace ApiIncidentFastTrack.Models;
 
-public class ResolutionType
+public class ResolutionType : BaseDomainModel
 {
-    public int ResolutionTypeId { get; set; }
-
     // Per company: each company manages its own list
     public int CompanyId { get; set; }
 
