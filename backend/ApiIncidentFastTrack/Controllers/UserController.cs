@@ -1,6 +1,7 @@
 using ApiIncidentFastTrack.DTOs.Users;
 using ApiIncidentFastTrack.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ApiIncidentFastTrack.Controllers;
 
@@ -23,6 +24,11 @@ public class UserController : ControllerBase
     {
         var users = await _userService.GetUsersAsync(cancellationToken);
 
+        if(users.IsNullOrEmpty())
+        {
+            return NotFound();
+        }
+
         return Ok(users);
     }
 
@@ -31,33 +37,62 @@ public class UserController : ControllerBase
     {
         var user = await _userService.GetUserByIdAsync(userId, cancellationToken);
 
+        if(user == null)
+        {
+            return NotFound();
+        }
+
         return Ok(user);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken)
     {
-        var user = await _userService.CreateUserAsync(request, cancellationToken);
+        try
+        {
+            var user = await _userService.CreateUserAsync(request, cancellationToken);
 
-        return CreatedAtAction(
-            nameof(GetUserById),
-            new { userId = user.UserId },
-            user
-        );
+            return CreatedAtAction(
+                nameof(GetUserById),
+                new { userId = user.UserId },
+                user
+            );
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Conflict(new { message = exception.Message });
+        }
     }
 
     [HttpPut("{userId:int}")]
     public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequestDto request, CancellationToken cancellationToken)
     {
-        var user = await _userService.UpdateUserAsync(userId, request, cancellationToken);
+        try
+        {
+            var user = await _userService.UpdateUserAsync(userId, request, cancellationToken);
 
-        return Ok(user);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Conflict(new { message = exception.Message });
+        }
     }
 
     [HttpDelete("{userId:int}")]
     public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
     {
-        await _userService.DeleteUserAsync(userId, cancellationToken);
+        var deleted = await _userService.DeleteUserAsync(userId, cancellationToken);
+
+        if (!deleted)
+        {
+            return NotFound();
+        }
 
         return NoContent();
     }
