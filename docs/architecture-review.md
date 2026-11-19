@@ -165,7 +165,7 @@ Endpoints:
 2. **Password reset:** is forgot/reset password in scope now? How is the email sent?
 3. **ResolutionType details:** should it be one global list or per company (today it has no `CompanyId`)? Can an incident have more than one outcome?
 4. **Customer PII:** which customer fields are needed, and who may see them?
-5. **Enum storage:** currently int (the EF default), chosen in task 4. Change to string before applying the migration if you prefer readable values in SQL.
+5. **Enum storage:** int (the EF default), applied in the initial migration. Changing it now needs a new migration.
 
 ## F. Roadmap (ordered)
 
@@ -251,7 +251,7 @@ Run on 2026-11-19 against the working tree, including the uncommitted `Models/` 
 | 1 | Working tree + enums cleanup | **Partly done** (2026-11-19): `Domain/` deleted by user; added `Incident.RejectionReason`, `ResolutionType.RequiresPayment`; `IncidentAttachment.UploadedAt` → `DateTime`. Soft delete dropped (never delete). Old root design files confirmed obsolete and left deleted. **Done** |
 | 2 | Fix broken test / `.http` | **Done** (2026-11-19): health test and request removed; build OK, 0 tests |
 | 3 | Docker Compose + SQL Server | **Partly done** (2026-11-19): `UserSecretsId` added to the csproj. SQL Server already runs in the user's own compose project (`askblue-sqlserver`, outside the repo, port 14330). Pending: whether the repo gets its own compose file, database name and login, and the user setting the connection-string secret |
-| 4 | EF Core + DbContext + migration | **Done, not applied** (2026-11-19): EF Core 10.0.15 (SqlServer + Design), local tool `dotnet-ef` 10.0.15 (`backend/dotnet-tools.json`), `Data/AppDbContext.cs`, 10 configurations in `Data/Configurations/`, migration `Data/Migrations/*_InitialCreate`. Enums stored as int. No seed data yet. **Migration not applied to the database** |
+| 4 | EF Core + DbContext + migration | **Done** (2026-11-19): EF Core 10.0.15 (SqlServer + Design), local tool `dotnet-ef` 10.0.15 (`backend/dotnet-tools.json`), `Data/AppDbContext.cs`, 10 configurations in `Data/Configurations/`, migration `Data/Migrations/*_InitialCreate`. Enums stored as int. No seed data yet. **Applied** to the local database `IncidentFastTrack` (2026-11-19) |
 | 5 | Authentication | Not started |
 | 6 | Tenant / current-user plumbing | Not started |
 | 7 | API hygiene (ProblemDetails, validation, CancellationToken) | Not started |
