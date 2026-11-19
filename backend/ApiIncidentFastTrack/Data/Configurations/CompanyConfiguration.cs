@@ -1,0 +1,17 @@
+using ApiIncidentFastTrack.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ApiIncidentFastTrack.Data.Configurations;
+
+public class CompanyConfiguration : IEntityTypeConfiguration<Company>
+{
+    public void Configure(EntityTypeBuilder<Company> builder)
+    {
+        builder.HasKey(c => c.CompanyId);
+
+        builder.Property(c => c.Name)
+            .IsRequired()
+            .HasMaxLength(200);
+    }
+}
