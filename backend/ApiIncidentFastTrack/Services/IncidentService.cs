@@ -19,9 +19,4 @@ public class IncidentService : IIncidentService
     {
         throw new NotImplementedException();
     }
-
-    public Task<bool> DeleteIncidentAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
 }

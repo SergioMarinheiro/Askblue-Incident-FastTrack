@@ -1,5 +1,6 @@
 using ApiIncidentFastTrack.Interfaces;
 using ApiIncidentFastTrack.Services;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// var connectionString = builder.Configuration.GetConnectionString("Incidents")
+//     ?? throw new InvalidOperationException("Configure ConnectionStrings:Campanhas com dornet user-sercrets.");
+//     builder.Services.AddDbContext<AppDbContext>(options =>options.UseSqlServer(connectionString));
+//     builder.Services.AddScoped<CampanhaService>();
 
 var app = builder.Build();
 

@@ -45,15 +45,4 @@ public class IncidentController : ControllerBase
 
         return Ok(incident);
     }
-
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteIncident(int id)
-    {
-        var deleted = await _incidentService.DeleteIncidentAsync(id);
-
-        if (!deleted)
-            return NotFound();
-
-        return NoContent();
-    }
 }
