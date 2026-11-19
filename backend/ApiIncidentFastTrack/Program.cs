@@ -5,6 +5,11 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IIncidentService, IncidentService>();
+builder.Services.AddScoped<IIncidentCommentService, IncidentCommentService>();
+builder.Services.AddScoped<IStoreService, StoreService>();
+builder.Services.AddScoped<IResolutionTypeService, ResolutionTypeService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 

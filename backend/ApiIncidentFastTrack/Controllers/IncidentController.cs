@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidentFastTrack.Controllers;
 
+// Who may call each action is listed in the comments; it is enforced once auth exists.
 [ApiController]
 [Route("api/incidents")]
 public class IncidentController : ControllerBase
@@ -15,10 +16,28 @@ public class IncidentController : ControllerBase
         _incidentService = incidentService;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateIncident([FromBody] CreateIncidentRequestDto request)
+    // Staff: own incidents. Manager/Admin: their company. SuperAdmin: all.
+    [HttpGet]
+    public async Task<IActionResult> GetAllIncidents(CancellationToken cancellationToken)
     {
-        var incident = await _incidentService.CreateIncidentAsync(request);
+        var incidents = await _incidentService.GetAllIncidentsAsync(cancellationToken);
+
+        return Ok(incidents);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetIncidentById(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.GetIncidentByIdAsync(id, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // Staff: creates a draft (status New). Only CustomerName is required.
+    [HttpPost]
+    public async Task<IActionResult> CreateIncident([FromBody] CreateIncidentRequestDto request, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.CreateIncidentAsync(request, cancellationToken);
 
         return CreatedAtAction(
             nameof(GetIncidentById),
@@ -27,21 +46,106 @@ public class IncidentController : ControllerBase
         );
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllIncidents()
+    // Saves changes; never changes the status. Who may edit depends on role and status.
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateIncident(int id, [FromBody] UpdateIncidentRequestDto request, CancellationToken cancellationToken)
     {
-        var incidents = await _incidentService.GetAllIncidentsAsync();
+        var incident = await _incidentService.UpdateIncidentAsync(id, request, cancellationToken);
 
-        return Ok(incidents);
+        return Ok(incident);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetIncidentById(int id)
+    // Staff (own incident, New/SentBack): hard delete after acknowledging a duplicate found at submit.
+    // This is the only way an incident is ever deleted.
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteDuplicateIncident(int id, CancellationToken cancellationToken)
     {
-        var incident = await _incidentService.GetIncidentByIdAsync(id);
+        await _incidentService.DeleteDuplicateIncidentAsync(id, cancellationToken);
 
-        if (incident == null)
-            return NotFound();
+        return NoContent();
+    }
+
+    // Staff: New/SentBack -> AwaitingApproval.
+    // 200 when submitted; 409 with the possible duplicates when matches are found.
+    [HttpPost("{id:int}/submit")]
+    public async Task<IActionResult> SubmitIncident(int id, [FromBody] SubmitIncidentRequestDto request, CancellationToken cancellationToken)
+    {
+        var result = await _incidentService.SubmitIncidentAsync(id, request, cancellationToken);
+
+        if (!result.Submitted)
+            return Conflict(result.PossibleDuplicates);
+
+        return Ok(result.Incident);
+    }
+
+    // Manager/Admin: AwaitingApproval -> AwaitingPayment or AwaitingResolution (from ResolutionType.RequiresPayment).
+    [HttpPost("{id:int}/approve")]
+    public async Task<IActionResult> ApproveIncident(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.ApproveIncidentAsync(id, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // Manager/Admin: AwaitingApproval -> Rejected. A reason is required.
+    [HttpPost("{id:int}/reject")]
+    public async Task<IActionResult> RejectIncident(int id, [FromBody] RejectIncidentRequestDto request, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.RejectIncidentAsync(id, request, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // Manager/Admin: AwaitingApproval -> SentBack. What to fix is explained in a comment.
+    [HttpPost("{id:int}/send-back")]
+    public async Task<IActionResult> SendBackIncident(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.SendBackIncidentAsync(id, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // Staff/Manager/Admin: AwaitingPayment/AwaitingResolution -> Completed.
+    [HttpPost("{id:int}/complete")]
+    public async Task<IActionResult> CompleteIncident(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.CompleteIncidentAsync(id, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // Staff (own)/Manager/Admin: any open status -> Canceled.
+    [HttpPost("{id:int}/cancel")]
+    public async Task<IActionResult> CancelIncident(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.CancelIncidentAsync(id, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // The duplicate flags saved when Staff proceeded despite possible duplicates.
+    [HttpGet("{id:int}/duplicates")]
+    public async Task<IActionResult> GetDuplicateFlags(int id, CancellationToken cancellationToken)
+    {
+        var flags = await _incidentService.GetDuplicateFlagsAsync(id, cancellationToken);
+
+        return Ok(flags);
+    }
+
+    // Manager/Admin: Pending flags -> NotDuplicate; the normal flow continues.
+    [HttpPost("{id:int}/duplicates/dismiss")]
+    public async Task<IActionResult> DismissDuplicateFlags(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.DismissDuplicateFlagsAsync(id, cancellationToken);
+
+        return Ok(incident);
+    }
+
+    // Manager/Admin: -> Duplicate (closed). The explanation is written as a comment.
+    [HttpPost("{id:int}/duplicates/confirm")]
+    public async Task<IActionResult> ConfirmDuplicate(int id, CancellationToken cancellationToken)
+    {
+        var incident = await _incidentService.ConfirmDuplicateAsync(id, cancellationToken);
 
         return Ok(incident);
     }

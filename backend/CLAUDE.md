@@ -19,19 +19,19 @@ Anything not listed here is not yet a requirement. If a feature seems to need a 
 ### Roles (`Enums/UserRole.cs`)
 
 - **Staff:** reports incidents. Sees only their own incidents.
-- **Manager:** reviews, edits, approves, rejects, sends back and marks duplicates. Sees all incidents of their company.
-- **Admin:** everything a Manager can do, plus edit any field in any status and create users. Own company only.
+- **Manager:** reviews, edits, approves, rejects, sends back, and dismisses or confirms duplicate flags. Can list and view users, and deactivate or reactivate Staff. Sees all incidents of their company.
+- **Admin:** everything a Manager can do, plus edit any field in any status, manage users (create, list, get, edit, deactivate) and create stores and locations. Own company only.
 - **SuperAdmin:** AskBlue platform staff with no company (`User.CompanyId` is null). Same powers as Admin, across all companies. It is the only role that bypasses tenant filtering.
 
 ### Statuses and transitions (`Enums/IncidentStatus.cs`)
 
 | From | To | Who | Rule |
 |---|---|---|---|
-| (create) | New | Staff | Draft. Can be saved many times while partly filled. Staff choose the `ResolutionType`. |
+| (create) | New | Staff | Draft. Can be saved many times while partly filled. Only `CustomerName` is required to create it. To submit it, every field is required except `EstimatedCompensationAmount`, which is always optional. Staff choose the `ResolutionType`. |
 | New, SentBack | AwaitingApproval | Staff | Staff submit it explicitly. Saving never moves the status. |
-| AwaitingApproval | SentBack | Manager, Admin | Returned to Staff for changes, then resubmitted. |
+| AwaitingApproval | SentBack | Manager, Admin | Returned to Staff for changes, then resubmitted. What to fix is explained in a comment. |
 | AwaitingApproval | Rejected | Manager, Admin | A reason is required (`Incident.RejectionReason`). Final. |
-| AwaitingApproval | Duplicate | Manager, Admin | Final. |
+| AwaitingApproval | Duplicate | Manager, Admin | Only when the incident has a pending duplicate flag (see Duplicates). An explanation is given in a comment. Final. Sets `ClosedAt`/`ClosedByUserId`. |
 | AwaitingApproval | AwaitingPayment | Manager, Admin (approve) | Automatic when `ResolutionType.RequiresPayment` is true (e.g. Compensation). |
 | AwaitingApproval | AwaitingResolution | Manager, Admin (approve) | Automatic when `RequiresPayment` is false (e.g. HR, Legal, Insurance). |
 | AwaitingPayment, AwaitingResolution | Completed | Staff, Manager, Admin | Sets `ClosedAt` and `ClosedByUserId`. |
@@ -44,16 +44,67 @@ When approving, the Manager does not choose the next status. It always follows f
 - **Staff:** can edit their own incidents only while they are New or SentBack.
 - **Manager:** can edit all fields until the incident is approved, rejected or marked Duplicate. A Manager may change the `ResolutionType` but doesn't have to.
 - **Admin, SuperAdmin:** can edit any field in any status.
+- **History:** every edit is recorded in `IncidentHistory` (field, old value, new value, who, when), whoever makes it and whatever the status, including draft edits. Fields saved together share one `ChangeSetId`.
+
+### Duplicates (`Models/IncidentDuplicate.cs`, `Enums/DuplicateReviewStatus.cs`)
+
+1. When Staff submit an incident (New/SentBack → AwaitingApproval), the system checks for possible duplicates among **open** incidents of the same company.
+   - **Scoring:** each matching criterion adds a weight: same incident type, same store, same location, same reporter (`CreatedByUserId`). If the total reaches a threshold, the other incident is a possible duplicate. *(Exact weights and threshold: not decided yet.)*
+2. API flow:
+   - `POST /api/incidents/{id}/submit` runs the check.
+     - **No matches:** AwaitingApproval (200).
+     - **Matches:** the status doesn't change, and the response is 409 Conflict with the list of possible duplicates.
+   - Staff then choose one of:
+     - **Proceed:** `POST /api/incidents/{id}/submit` with `{ "proceedDespiteDuplicates": true }`. The incident goes to AwaitingApproval with `IncidentDuplicate` rows linking it to each match (`ReviewStatus = Pending`).
+     - **Acknowledge it's a duplicate:** `DELETE /api/incidents/{id}` **hard-deletes** the incident. This is the only case where an incident is ever deleted. It's allowed only for the incident's own Staff, only while it is New or SentBack, and only right after a duplicate check found matches.
+3. The Manager sees the flag and the matching incidents, then either:
+   - **Dismisses the flag:** `ReviewStatus = NotDuplicate`, and the normal flow continues.
+   - **Confirms it:** `ReviewStatus = ConfirmedDuplicate`, status becomes Duplicate, the incident is closed, and the explanation is written as a comment.
+
+### Comments and attachments
+
+- Both are in scope. They are general incident features, not part of duplicate detection.
+- **Comments:** anyone who can see an incident can add a comment to it. Editing and deleting comments is out of scope for now, to be revisited once the backend and database are done.
+- **Attachments:** where files are stored, the size limit and the allowed types are not decided yet. Ask before implementing.
+
+### Stores and locations
+
+- Admin (own company) and SuperAdmin can create stores and the locations inside them. Staff choose a store and location when reporting an incident.
+
+### Users
+
+- Admin (own company) and SuperAdmin can create, list, get and edit users.
+- **On create**, the creator sets the initial password.
+- **Roles a creator may assign:**
+  - Admin: Staff, Manager or Admin, own company only.
+  - SuperAdmin: any role, including SuperAdmin. Only a SuperAdmin can create a SuperAdmin.
+- Managers can list and view the users of their own company.
+- **Deactivate and reactivate** (`IsActive`):
+  - Manager: only Staff of their own company.
+  - Admin: any user of their own company.
+  - SuperAdmin: any user.
+- Users are never deleted. Deactivation is enough.
+
+### Resolution types
+
+- **Per company** (`ResolutionType.CompanyId`): each company has its own list, and other companies never see it.
+- Created and edited by that company's Admin, or by SuperAdmin. Staff and Manager only read them, to pick one on an incident.
 
 ### Deletion
 
-- Incidents are **never deleted**, by anyone, not even soft-deleted. Use the Canceled status to take an incident out of the active flow.
+- Incidents are never deleted, not even soft-deleted. Use the Canceled status to take an incident out of the active flow.
+- **The only exception** is the duplicate acknowledgement at submit (see Duplicates), which hard-deletes the incident through `DELETE /api/incidents/{id}`.
 
 ### Technical decisions
 
 - JWT authentication, with login by email.
 - Schema managed with EF Core migrations, not the SQL scripts in `database/migrations`.
 - The tenant comes from the authenticated user's JWT claims.
+- **SuperAdmin exception:** request DTOs that create company-owned data (users, stores, resolution types) may carry an optional `CompanyId`. It is accepted only from a SuperAdmin. From any other role it is rejected with 403, never silently used.
+- **Errors:**
+  - Services throw `NotFoundException`, `ForbiddenException` or `BusinessRuleException`.
+  - One central exception handler turns them into ProblemDetails responses: 404, 403, and 409/422 respectively.
+  - Controllers don't catch them.
 
 ### Not yet decided
 

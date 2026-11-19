@@ -10,19 +10,21 @@ public class Incident
     public int CompanyId { get; set; }
     public int CreatedByUserId { get; set; }
     public int? ClosedByUserId { get; set; }
-    public int StoreId { get; set; }
-    public int LocationId { get; set; }
+    public int? StoreId { get; set; }
+    public int? LocationId { get; set; }
     public int? ResolutionTypeId { get; set; }
 
     // Incident information
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    // Draft rule: only CustomerName is required on create; the rest is required on submit
+    // (except EstimatedCompensationAmount, always optional). Enforced in the service.
+    public string? Title { get; set; }
+    public string? Description { get; set; }
 
-    public IncidentPriority Priority { get; set; }
+    public IncidentPriority? Priority { get; set; }
     public IncidentStatus Status { get; set; }
-    public IncidentType IncidentType { get; set; }
+    public IncidentType? IncidentType { get; set; }
 
-    public DateTime IncidentDate { get; set; }
+    public DateTime? IncidentDate { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? ClosedAt { get; set; }
@@ -43,8 +45,8 @@ public class Incident
     public Company Company { get; set; } = null!;
     public User CreatedByUser { get; set; } = null!;
     public User? ClosedByUser { get; set; }
-    public Store Store { get; set; } = null!;
-    public Location Location { get; set; } = null!;
+    public Store? Store { get; set; }
+    public Location? Location { get; set; }
     public ResolutionType? ResolutionType { get; set; }
 
     public ICollection<IncidentComment> Comments { get; set; } = new List<IncidentComment>();

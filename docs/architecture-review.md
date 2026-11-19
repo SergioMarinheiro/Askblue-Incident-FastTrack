@@ -51,6 +51,7 @@ Endpoints:
 ## D. Concerns
 
 ### D1. Bugs
+- **Resolved (task 14):** all services are now registered in DI.
 - [Existing] **`IIncidentService` is not registered in DI** (`Program.cs:7` registers only `IAuthService`). Every `/api/incidents` request fails with a 500 (`InvalidOperationException` when the controller is activated). Even if it were registered, the service would then throw `NotImplementedException`.
 - [Existing] **The test targets a deleted endpoint.** `HealthControllerTests.cs:20` calls `GET /api/health`, but `HealthController.cs` was deleted in commit `5770bda`. `ApiIncidentFastTrack.http:3` also still calls `/api/health`. **Confirmed:** the test fails with `Expected: OK, Actual: NotFound`.
   - **Resolved (task 2):** the health endpoint was template scaffolding, not part of the project. The test and the `.http` request were removed.
@@ -153,15 +154,18 @@ Endpoints:
 - **Model additions:** `RejectionReason` on `Incident` and `RequiresPayment` (bool) on `ResolutionType`. Both done in task 1. There is no `IsDeleted`/`DeletedAt`.
 - **Routing after approval:** if `ResolutionType.RequiresPayment` is true, the incident goes to AwaitingPayment, otherwise to AwaitingResolution. Compensation is seeded with `RequiresPayment = true`. New outcome types need no code change.
 
+- **More scope confirmed:**
+  - Comments, attachments and duplicate detection are all in scope now.
+  - Admin can create stores and locations.
+  - Users: create, list, get, edit and deactivate, never delete. Managers can also deactivate users.
+  - Duplicate flow: see `backend/CLAUDE.md`, "Duplicates". Acknowledging a duplicate at submit is the only case of a hard delete.
+
 ### Still open
 1. **Approval record:** should the approver and decision date get dedicated fields on `Incident`, or only be recorded in `IncidentHistory`? (The rejection reason is confirmed as a field on `Incident`.)
 2. **Password reset:** is forgot/reset password in scope now? How is the email sent?
-3. **ResolutionType details:** should it be one global list or per company (today it has no `CompanyId`)? Can an incident have more than one outcome? Is the old `Domain/Enums/ExternalPartyType` still needed, or does it get deleted?
-4. **Store/Location:** are they required on every incident?
-5. **Data model scope:** are Comments, Attachments and Duplicate detection in scope now?
-6. **Customer PII:** which customer fields are needed, and who may see them?
-7. **Enum storage:** stored as int (EF default) or as string?
-8. **Design docs:** were the deleted root design docs removed on purpose?
+3. **ResolutionType details:** should it be one global list or per company (today it has no `CompanyId`)? Can an incident have more than one outcome?
+4. **Customer PII:** which customer fields are needed, and who may see them?
+5. **Enum storage:** stored as int (EF default) or as string?
 
 ## F. Roadmap (ordered)
 
@@ -256,4 +260,5 @@ Run on 2026-11-19 against the working tree, including the uncommitted `Models/` 
 | 10 | Approve/reject + transitions | Not started |
 | 11 | Compensation / referral | Not started |
 | 12 | Unit tests | Not started |
-| 13 | Remove DELETE endpoint | **Done** (2026-11-19): endpoint, interface method and service stub removed; build OK |
+| 13 | Remove DELETE endpoint | **Done** (2026-11-19): endpoint, interface method and service stub removed; build OK. *Note: a new, narrowly guarded `DELETE` comes back with the duplicate flow (acknowledge a duplicate at submit). See `backend/CLAUDE.md`, "Duplicates".* |
+| 14 | API contract (DTOs, interfaces, stub services, controllers, DI) | **Done** (2026-11-19). 33 endpoints in Swagger; services are `NotImplementedException` stubs; DI fixed; `Incident` fields nullable for drafts; `ResolutionType.CompanyId` added. Attachments not included (storage undecided) |
