@@ -2,7 +2,7 @@ namespace ApiIncidentFastTrack.DTOs.Stores;
 
 public class CreateStoreRequestDto
 {
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; }
     public string? Address { get; set; }
 
     // Only accepted from a SuperAdmin, who has no company of their own.

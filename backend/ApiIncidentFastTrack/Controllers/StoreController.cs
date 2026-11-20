@@ -1,6 +1,7 @@
 using ApiIncidentFastTrack.DTOs.Stores;
 using ApiIncidentFastTrack.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ApiIncidentFastTrack.Controllers;
 
@@ -22,6 +23,11 @@ public class StoreController : ControllerBase
     {
         var stores = await _storeService.GetStoresAsync(cancellationToken);
 
+        if(stores.IsNullOrEmpty())
+        {
+            return NotFound();
+        }
+
         return Ok(stores);
     }
 
@@ -29,6 +35,11 @@ public class StoreController : ControllerBase
     public async Task<IActionResult> GetStoreById(int storeId, CancellationToken cancellationToken)
     {
         var store = await _storeService.GetStoreByIdAsync(storeId, cancellationToken);
+
+        if(store == null)
+        {
+            return NotFound();
+        }
 
         return Ok(store);
     }
@@ -48,7 +59,12 @@ public class StoreController : ControllerBase
     [HttpDelete("{storeId:int}")]
     public async Task<IActionResult> DeleteStore(int storeId, CancellationToken cancellationToken)
     {
-        await _storeService.DeleteStoreAsync(storeId, cancellationToken);
+        var deleted = await _storeService.DeleteStoreAsync(storeId, cancellationToken);
+
+        if(!deleted)
+        {
+            return NotFound();
+        }
 
         return NoContent();
     }
@@ -58,6 +74,11 @@ public class StoreController : ControllerBase
     {
         var locations = await _storeService.GetLocationsAsync(storeId, cancellationToken);
 
+        if(locations.IsNullOrEmpty())
+        {
+            return NotFound();
+        }
+
         return Ok(locations);
     }
 
@@ -65,6 +86,11 @@ public class StoreController : ControllerBase
     public async Task<IActionResult> CreateLocation(int storeId, [FromBody] CreateLocationRequestDto request, CancellationToken cancellationToken)
     {
         var location = await _storeService.CreateLocationAsync(storeId, request, cancellationToken);
+
+        if (location is null)
+        {
+            return NotFound();
+        }
 
         return CreatedAtAction(
             nameof(GetLocations),
@@ -76,7 +102,12 @@ public class StoreController : ControllerBase
     [HttpDelete("{storeId:int}/locations/{locationId:int}")]
     public async Task<IActionResult> DeleteLocation(int storeId, int locationId, CancellationToken cancellationToken)
     {
-        await _storeService.DeleteLocationAsync(storeId, locationId, cancellationToken);
+        var deleted = await _storeService.DeleteLocationAsync(storeId, locationId, cancellationToken);
+
+        if(!deleted)
+        {
+            return NotFound();
+        }
 
         return NoContent();
     }

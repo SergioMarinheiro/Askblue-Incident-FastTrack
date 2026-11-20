@@ -69,7 +69,7 @@ public class UserService : IUserService
             Role = request.Role,
             CompanyId = request.CompanyId
         };
-
+          
         await _context.Users.AddAsync(user, cancellationToken);
 
         try
@@ -163,5 +163,5 @@ public class UserService : IUserService
         await _context.SaveChangesAsync(cancellationToken);
 
         return true;
-    }
+    }  
 }
