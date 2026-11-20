@@ -86,7 +86,10 @@ builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<IResolutionTypeService, ResolutionTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Errors as ProblemDetails (RFC 9457): exceptions thrown by services (GlobalExceptionHandler)
 // and empty-body status codes such as 401/403 from authorization (UseStatusCodePages below).
