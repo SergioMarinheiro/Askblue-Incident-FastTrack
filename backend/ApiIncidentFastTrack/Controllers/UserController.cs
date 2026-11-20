@@ -1,5 +1,7 @@
+using ApiIncidentFastTrack.Auth;
 using ApiIncidentFastTrack.DTOs.Users;
 using ApiIncidentFastTrack.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidentFastTrack.Controllers;
@@ -19,6 +21,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
         var users = await _userService.GetUsersAsync(cancellationToken);
@@ -27,6 +30,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId:int}")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> GetUserById(int userId, CancellationToken cancellationToken)
     {
         var user = await _userService.GetUserByIdAsync(userId, cancellationToken);
@@ -35,6 +39,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken)
     {
         var user = await _userService.CreateUserAsync(request, cancellationToken);
@@ -47,6 +52,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{userId:int}")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequestDto request, CancellationToken cancellationToken)
     {
         var user = await _userService.UpdateUserAsync(userId, request, cancellationToken);
@@ -55,6 +61,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{userId:int}")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
     {
         await _userService.DeleteUserAsync(userId, cancellationToken);

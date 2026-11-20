@@ -1,10 +1,14 @@
+using ApiIncidentFastTrack.Auth;
 using ApiIncidentFastTrack.DTOs.Incidents;
 using ApiIncidentFastTrack.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidentFastTrack.Controllers;
 
-// Who may call each action is listed in the comments; it is enforced once auth exists.
+// Any authenticated user may call an action without an [Authorize] attribute (fallback policy).
+// The attributes are the coarse role gate. Rules such as "own incident only" or
+// "only in status X" are enforced in IncidentService.
 [ApiController]
 [Route("api/incidents")]
 public class IncidentController : ControllerBase
@@ -33,7 +37,7 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // Staff: creates a draft (status New). Only CustomerName is required.
+    // Any role: creates a draft (status New). Only CustomerName is required.
     [HttpPost]
     public async Task<IActionResult> CreateIncident([FromBody] CreateIncidentRequestDto request, CancellationToken cancellationToken)
     {
@@ -55,7 +59,7 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // Staff (own incident, New/SentBack): hard delete after acknowledging a duplicate found at submit.
+    // The incident's creator (New/SentBack): hard delete after acknowledging a duplicate found at submit.
     // This is the only way an incident is ever deleted.
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteDuplicateIncident(int id, CancellationToken cancellationToken)
@@ -65,7 +69,7 @@ public class IncidentController : ControllerBase
         return NoContent();
     }
 
-    // Staff: New/SentBack -> AwaitingApproval.
+    // The incident's creator: New/SentBack -> AwaitingApproval.
     // 200 when submitted; 409 with the possible duplicates when matches are found.
     [HttpPost("{id:int}/submit")]
     public async Task<IActionResult> SubmitIncident(int id, [FromBody] SubmitIncidentRequestDto request, CancellationToken cancellationToken)
@@ -80,6 +84,7 @@ public class IncidentController : ControllerBase
 
     // Manager/Admin: AwaitingApproval -> AwaitingPayment or AwaitingResolution (from ResolutionType.RequiresPayment).
     [HttpPost("{id:int}/approve")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> ApproveIncident(int id, CancellationToken cancellationToken)
     {
         var incident = await _incidentService.ApproveIncidentAsync(id, cancellationToken);
@@ -89,6 +94,7 @@ public class IncidentController : ControllerBase
 
     // Manager/Admin: AwaitingApproval -> Rejected. A reason is required.
     [HttpPost("{id:int}/reject")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> RejectIncident(int id, [FromBody] RejectIncidentRequestDto request, CancellationToken cancellationToken)
     {
         var incident = await _incidentService.RejectIncidentAsync(id, request, cancellationToken);
@@ -98,6 +104,7 @@ public class IncidentController : ControllerBase
 
     // Manager/Admin: AwaitingApproval -> SentBack. What to fix is explained in a comment.
     [HttpPost("{id:int}/send-back")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> SendBackIncident(int id, CancellationToken cancellationToken)
     {
         var incident = await _incidentService.SendBackIncidentAsync(id, cancellationToken);
@@ -134,6 +141,7 @@ public class IncidentController : ControllerBase
 
     // Manager/Admin: Pending flags -> NotDuplicate; the normal flow continues.
     [HttpPost("{id:int}/duplicates/dismiss")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> DismissDuplicateFlags(int id, CancellationToken cancellationToken)
     {
         var incident = await _incidentService.DismissDuplicateFlagsAsync(id, cancellationToken);
@@ -143,6 +151,7 @@ public class IncidentController : ControllerBase
 
     // Manager/Admin: -> Duplicate (closed). The explanation is written as a comment.
     [HttpPost("{id:int}/duplicates/confirm")]
+    [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> ConfirmDuplicate(int id, CancellationToken cancellationToken)
     {
         var incident = await _incidentService.ConfirmDuplicateAsync(id, cancellationToken);

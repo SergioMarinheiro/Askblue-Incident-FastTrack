@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ApiIncidentFastTrack.DTOs.Auth;
 using ApiIncidentFastTrack.Interfaces;
-using ApiIncidentFastTrack.Services;
 
 namespace ApiIncidentFastTrack.Controllers;
 
@@ -11,6 +11,8 @@ namespace ApiIncidentFastTrack.Controllers;
 // ==========================================
 [ApiController]
 [Route("api/[controller]")] // Base route: /api/auth
+// The only endpoints open without a token (everything else falls under the fallback policy in Program.cs).
+[AllowAnonymous]
 
 public class AuthController : ControllerBase
 {
@@ -20,31 +22,46 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
     }
-    
+
     // POST /api/auth/login
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+    [ProducesResponseType<LoginResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto request, CancellationToken cancellationToken)
     {
-        var result = await _authService.LoginAsync(request);
+        var result = await _authService.LoginAsync(request, cancellationToken);
+
+        if (result is null)
+        {
+            // Same message for unknown email and wrong password.
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                title: "Invalid email or password.");
+        }
 
         return Ok(result);
     }
 
+    // Password reset is not decided yet (open question E2): how the email is sent.
+    // The routes stay so the contract is visible, but return 501 until then.
+
     // POST /api/auth/forgot-password
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
+    public IActionResult ForgotPassword([FromBody] ForgotPasswordRequestDto request)
     {
-        var result = await _authService.ForgotPasswordAsync(request);
-
-        return Ok(result);
+        return Problem(
+            statusCode: StatusCodes.Status501NotImplemented,
+            title: "Password reset is not available yet.");
     }
 
     // POST /api/auth/reset-password
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
+    public IActionResult ResetPassword([FromBody] ResetPasswordRequestDto request)
     {
-        var result = await _authService.ResetPasswordAsync(request);
-
-        return Ok(result);
+        return Problem(
+            statusCode: StatusCodes.Status501NotImplemented,
+            title: "Password reset is not available yet.");
     }
 }

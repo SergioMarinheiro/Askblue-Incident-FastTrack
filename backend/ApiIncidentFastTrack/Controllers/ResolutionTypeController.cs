@@ -1,5 +1,7 @@
+using ApiIncidentFastTrack.Auth;
 using ApiIncidentFastTrack.DTOs.ResolutionTypes;
 using ApiIncidentFastTrack.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidentFastTrack.Controllers;
@@ -26,6 +28,7 @@ public class ResolutionTypeController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateResolutionType([FromBody] CreateResolutionTypeRequestDto request, CancellationToken cancellationToken)
     {
         var resolutionType = await _resolutionTypeService.CreateResolutionTypeAsync(request, cancellationToken);
@@ -38,6 +41,7 @@ public class ResolutionTypeController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> UpdateResolutionType(int id, [FromBody] UpdateResolutionTypeRequestDto request, CancellationToken cancellationToken)
     {
         var resolutionType = await _resolutionTypeService.UpdateResolutionTypeAsync(id, request, cancellationToken);

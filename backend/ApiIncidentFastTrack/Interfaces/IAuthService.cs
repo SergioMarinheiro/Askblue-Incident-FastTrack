@@ -4,9 +4,7 @@ namespace ApiIncidentFastTrack.Interfaces;
 
 public interface IAuthService
 {
-    Task<LoginResponseDto> LoginAsync(LoginRequestDto request);
-
-    Task<string> ForgotPasswordAsync(ForgotPasswordRequestDto request);
-
-    Task<string> ResetPasswordAsync(ResetPasswordRequestDto request);
+    // Returns null when the email/password pair is not valid.
+    // The caller must not say which of the two was wrong.
+    Task<LoginResponseDto?> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken);
 }
