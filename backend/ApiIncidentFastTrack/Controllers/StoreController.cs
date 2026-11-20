@@ -49,6 +49,11 @@ public class StoreController : ControllerBase
     {
         var store = await _storeService.CreateStoreAsync(request, cancellationToken);
 
+        if (store is null)
+        {
+            return NotFound("The specified company does not exist.");
+        }
+
         return CreatedAtAction(
             nameof(GetStoreById),
             new { storeId = store.StoreId },

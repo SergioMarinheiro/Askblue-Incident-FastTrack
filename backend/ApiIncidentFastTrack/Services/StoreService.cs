@@ -45,12 +45,26 @@ public class StoreService : IStoreService
             }).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<StoreResponseDto> CreateStoreAsync(CreateStoreRequestDto request, CancellationToken cancellationToken)
+    public async Task<StoreResponseDto?> CreateStoreAsync(CreateStoreRequestDto request, CancellationToken cancellationToken)
     {
+        if (request.CompanyId is null)
+        {
+            return null;
+        }
+
+        var companyExists = await _context.Companies.AnyAsync(company =>
+                company.Id == request.CompanyId.Value, cancellationToken);
+
+        if (!companyExists)
+        {
+            return null;
+        }
+
         var store = new Store
         {
+            CompanyId = request.CompanyId.Value,
             Name = request.Name,
-            Address = request.Address ?? null
+            Address = request.Address
         };
 
         await _context.Stores.AddAsync(store, cancellationToken);
