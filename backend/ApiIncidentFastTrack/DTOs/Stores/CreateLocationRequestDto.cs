@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ApiIncidentFastTrack.DTOs.Stores;
 
 // The store (and therefore the company) comes from the route, not the body.
 public class CreateLocationRequestDto
 {
-    public required string Name { get; set; }
+    [Required]
+    [MaxLength(200)]
+    public string Name { get; set; } = string.Empty;
 }

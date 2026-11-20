@@ -1,13 +1,24 @@
+using System.ComponentModel.DataAnnotations;
 using ApiIncidentFastTrack.Enums;
 
 namespace ApiIncidentFastTrack.DTOs.Users;
 
 public class UpdateUserRequestDto
 {
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string? Email { get; set; }
+    [Required]
+    [MaxLength(100)]
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(100)]
+    public string LastName { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    [MaxLength(256)]
+    public string Email { get; set; } = string.Empty;
 
     // Same assignment rules as on create.
-    public UserRole? Role { get; set; }
+    [EnumDataType(typeof(UserRole))]
+    public UserRole Role { get; set; }
 }

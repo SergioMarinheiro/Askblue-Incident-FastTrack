@@ -1,7 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ApiIncidentFastTrack.DTOs.Auth;
 
 public class LoginRequestDto
 {
-    public string Name { get; set; } = string.Empty;
+    [Required]
+    [EmailAddress]
+    [MaxLength(256)]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
     public string Password { get; set; } = string.Empty;
 }
