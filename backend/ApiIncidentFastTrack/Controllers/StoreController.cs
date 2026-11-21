@@ -1,5 +1,7 @@
+using ApiIncidentFastTrack.Auth;
 using ApiIncidentFastTrack.DTOs.Stores;
 using ApiIncidentFastTrack.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidentFastTrack.Controllers;
@@ -34,6 +36,7 @@ public class StoreController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateStore([FromBody] CreateStoreRequestDto request, CancellationToken cancellationToken)
     {
         var store = await _storeService.CreateStoreAsync(request, cancellationToken);
@@ -46,6 +49,7 @@ public class StoreController : ControllerBase
     }
 
     [HttpDelete("{storeId:int}")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> DeleteStore(int storeId, CancellationToken cancellationToken)
     {
         await _storeService.DeleteStoreAsync(storeId, cancellationToken);
@@ -62,6 +66,7 @@ public class StoreController : ControllerBase
     }
 
     [HttpPost("{storeId:int}/locations")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateLocation(int storeId, [FromBody] CreateLocationRequestDto request, CancellationToken cancellationToken)
     {
         var location = await _storeService.CreateLocationAsync(storeId, request, cancellationToken);
@@ -74,6 +79,7 @@ public class StoreController : ControllerBase
     }
 
     [HttpDelete("{storeId:int}/locations/{locationId:int}")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> DeleteLocation(int storeId, int locationId, CancellationToken cancellationToken)
     {
         await _storeService.DeleteLocationAsync(storeId, locationId, cancellationToken);
