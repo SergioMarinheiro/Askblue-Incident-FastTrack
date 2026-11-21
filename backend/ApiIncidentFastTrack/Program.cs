@@ -69,7 +69,9 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AuthPolicies.ManagerOrAbove, policy =>
         policy.RequireRole(nameof(UserRole.Manager), nameof(UserRole.Admin), nameof(UserRole.SuperAdmin)))
     .AddPolicy(AuthPolicies.AdminOrAbove, policy =>
-        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.SuperAdmin)));
+        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.SuperAdmin)))
+    .AddPolicy(AuthPolicies.SuperAdminOnly, policy =>
+        policy.RequireRole(nameof(UserRole.SuperAdmin)));
 
 // The caller of the current request, read from the JWT claims (used by services and the tenant filter).
 builder.Services.AddHttpContextAccessor();
@@ -80,6 +82,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IIncidentCommentService, IncidentCommentService>();
 builder.Services.AddScoped<IStoreService, StoreService>();
