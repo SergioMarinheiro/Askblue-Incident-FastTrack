@@ -76,6 +76,7 @@ builder.Services.AddAuthorizationBuilder()
 // The caller of the current request, read from the JWT claims (used by services and the tenant filter).
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<ICompanyResolver, CompanyResolver>();
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

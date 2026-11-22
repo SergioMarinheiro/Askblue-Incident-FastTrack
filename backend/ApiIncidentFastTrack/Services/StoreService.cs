@@ -15,12 +15,12 @@ namespace ApiIncidentFastTrack.Services;
 public class StoreService : IStoreService
 {
     private readonly AppDbContext _db;
-    private readonly ICurrentUser _currentUser;
+    private readonly ICompanyResolver _companyResolver;
 
-    public StoreService(AppDbContext db, ICurrentUser currentUser)
+    public StoreService(AppDbContext db, ICompanyResolver companyResolver)
     {
         _db = db;
-        _currentUser = currentUser;
+        _companyResolver = companyResolver;
     }
 
     public async Task<IEnumerable<StoreResponseDto>> GetStoresAsync(CancellationToken cancellationToken)
@@ -48,7 +48,7 @@ public class StoreService : IStoreService
 
     public async Task<StoreResponseDto> CreateStoreAsync(CreateStoreRequestDto request, CancellationToken cancellationToken)
     {
-        var companyId = await ResolveCompanyIdAsync(request.CompanyId, cancellationToken);
+        var companyId = await _companyResolver.ResolveForCreateAsync(request.CompanyId, "a store", cancellationToken);
 
         var store = new Store
         {
@@ -138,37 +138,6 @@ public class StoreService : IStoreService
         {
             throw new NotFoundException($"Store {storeId} was not found.");
         }
-    }
-
-    // Which company a new store belongs to (the SuperAdmin exception, see CLAUDE.md):
-    // - Admin: always their own company, from the JWT. Sending CompanyId is rejected (403),
-    //   never silently ignored, so a client bug or a tampering attempt is visible.
-    // - SuperAdmin: has no company, so must say which one. It must exist.
-    private async Task<int> ResolveCompanyIdAsync(int? requestedCompanyId, CancellationToken cancellationToken)
-    {
-        if (!_currentUser.IsSuperAdmin)
-        {
-            if (requestedCompanyId is not null)
-            {
-                throw new ForbiddenException("Only a SuperAdmin may choose the company. Leave CompanyId out.");
-            }
-
-            // Every role except SuperAdmin has a company, so a missing claim is a bug, not a user error (500).
-            return _currentUser.CompanyId
-                ?? throw new InvalidOperationException("The authenticated user has no company claim.");
-        }
-
-        if (requestedCompanyId is not int companyId)
-        {
-            throw new BusinessRuleException("CompanyId is required when a SuperAdmin creates a store.");
-        }
-
-        if (!await _db.Companies.AnyAsync(c => c.Id == companyId, cancellationToken))
-        {
-            throw new BusinessRuleException($"Company {companyId} does not exist.");
-        }
-
-        return companyId;
     }
 
     private static StoreResponseDto ToDto(Store store) => new()
