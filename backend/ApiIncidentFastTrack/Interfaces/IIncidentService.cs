@@ -11,6 +11,7 @@ public interface IIncidentService
     // Reading
     Task<IEnumerable<IncidentResponseDto>> GetAllIncidentsAsync(CancellationToken cancellationToken);
     Task<IncidentResponseDto> GetIncidentByIdAsync(int id, CancellationToken cancellationToken);
+    Task<IEnumerable<IncidentHistoryResponseDto>> GetIncidentHistoryAsync(int id, CancellationToken cancellationToken);
 
     // Draft editing
     Task<IncidentResponseDto> CreateIncidentAsync(CreateIncidentRequestDto request, CancellationToken cancellationToken);
@@ -23,12 +24,12 @@ public interface IIncidentService
     Task<SubmitIncidentResultDto> SubmitIncidentAsync(int id, SubmitIncidentRequestDto request, CancellationToken cancellationToken);
     Task<IncidentResponseDto> ApproveIncidentAsync(int id, CancellationToken cancellationToken);
     Task<IncidentResponseDto> RejectIncidentAsync(int id, RejectIncidentRequestDto request, CancellationToken cancellationToken);
-    Task<IncidentResponseDto> SendBackIncidentAsync(int id, CancellationToken cancellationToken);
+    Task<IncidentResponseDto> SendBackIncidentAsync(int id, SendBackIncidentRequestDto request, CancellationToken cancellationToken);
     Task<IncidentResponseDto> CompleteIncidentAsync(int id, CancellationToken cancellationToken);
     Task<IncidentResponseDto> CancelIncidentAsync(int id, CancellationToken cancellationToken);
 
     // Duplicate flags (Manager review)
     Task<IEnumerable<IncidentDuplicateResponseDto>> GetDuplicateFlagsAsync(int id, CancellationToken cancellationToken);
     Task<IncidentResponseDto> DismissDuplicateFlagsAsync(int id, CancellationToken cancellationToken);
-    Task<IncidentResponseDto> ConfirmDuplicateAsync(int id, CancellationToken cancellationToken);
+    Task<IncidentResponseDto> ConfirmDuplicateAsync(int id, ConfirmDuplicateRequestDto request, CancellationToken cancellationToken);
 }

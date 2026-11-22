@@ -37,6 +37,15 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
+    // Anyone who can see the incident: every recorded edit, oldest first.
+    [HttpGet("{id:int}/history")]
+    public async Task<IActionResult> GetIncidentHistory(int id, CancellationToken cancellationToken)
+    {
+        var history = await _incidentService.GetIncidentHistoryAsync(id, cancellationToken);
+
+        return Ok(history);
+    }
+
     // Any role: creates a draft (status New). Only CustomerName is required.
     [HttpPost]
     public async Task<IActionResult> CreateIncident([FromBody] CreateIncidentRequestDto request, CancellationToken cancellationToken)
@@ -59,7 +68,7 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // The incident's creator (New/SentBack): hard delete after acknowledging a duplicate found at submit.
+    // The incident's creator (New only): hard delete after acknowledging a duplicate found at submit.
     // This is the only way an incident is ever deleted.
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteDuplicateIncident(int id, CancellationToken cancellationToken)
@@ -102,12 +111,12 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // Manager/Admin: AwaitingApproval -> SentBack. What to fix is explained in a comment.
+    // Manager/Admin: AwaitingApproval -> SentBack. What to fix is required, saved as a comment.
     [HttpPost("{id:int}/send-back")]
     [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
-    public async Task<IActionResult> SendBackIncident(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SendBackIncident(int id, [FromBody] SendBackIncidentRequestDto request, CancellationToken cancellationToken)
     {
-        var incident = await _incidentService.SendBackIncidentAsync(id, cancellationToken);
+        var incident = await _incidentService.SendBackIncidentAsync(id, request, cancellationToken);
 
         return Ok(incident);
     }
@@ -149,12 +158,12 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // Manager/Admin: -> Duplicate (closed). The explanation is written as a comment.
+    // Manager/Admin: -> Duplicate (closed). The explanation is required, saved as a comment.
     [HttpPost("{id:int}/duplicates/confirm")]
     [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
-    public async Task<IActionResult> ConfirmDuplicate(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmDuplicate(int id, [FromBody] ConfirmDuplicateRequestDto request, CancellationToken cancellationToken)
     {
-        var incident = await _incidentService.ConfirmDuplicateAsync(id, cancellationToken);
+        var incident = await _incidentService.ConfirmDuplicateAsync(id, request, cancellationToken);
 
         return Ok(incident);
     }
