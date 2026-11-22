@@ -10,17 +10,17 @@ namespace ApiIncidentFastTrack.Services;
 // Tenant isolation:
 // - ResolutionType has the "Tenant" query filter, so every query only sees the caller's
 //   company (SuperAdmin: all). Another company's resolution type is "not found" (404).
-// - On create, CompanyId comes from the JWT (SuperAdmin: from the request, see below).
+// - On create, the company comes from ICompanyResolver (JWT; SuperAdmin: from the request).
 // Role gates (read: everyone; create/update: AdminOrAbove) are on the controller.
 public class ResolutionTypeService : IResolutionTypeService
 {
     private readonly AppDbContext _db;
-    private readonly ICurrentUser _currentUser;
+    private readonly ICompanyResolver _companyResolver;
 
-    public ResolutionTypeService(AppDbContext db, ICurrentUser currentUser)
+    public ResolutionTypeService(AppDbContext db, ICompanyResolver companyResolver)
     {
         _db = db;
-        _currentUser = currentUser;
+        _companyResolver = companyResolver;
     }
 
     public async Task<IEnumerable<ResolutionTypeResponseDto>> GetResolutionTypesAsync(CancellationToken cancellationToken)
@@ -33,7 +33,6 @@ public class ResolutionTypeService : IResolutionTypeService
                 ResolutionTypeId = r.Id,
                 CompanyId = r.CompanyId,
                 Name = r.Name,
-                Description = r.Description,
                 RequiresPayment = r.RequiresPayment
             })
             .ToListAsync(cancellationToken);
@@ -41,13 +40,12 @@ public class ResolutionTypeService : IResolutionTypeService
 
     public async Task<ResolutionTypeResponseDto> CreateResolutionTypeAsync(CreateResolutionTypeRequestDto request, CancellationToken cancellationToken)
     {
-        var companyId = await ResolveCompanyIdAsync(request.CompanyId, cancellationToken);
+        var companyId = await _companyResolver.ResolveForCreateAsync(request.CompanyId, "a resolution type", cancellationToken);
 
         var resolutionType = new ResolutionType
         {
             CompanyId = companyId,
             Name = request.Name.Trim(),
-            Description = NormalizeDescription(request.Description),
             RequiresPayment = request.RequiresPayment
         };
 
@@ -68,7 +66,6 @@ public class ResolutionTypeService : IResolutionTypeService
             ?? throw new NotFoundException($"Resolution type {id} was not found.");
 
         resolutionType.Name = request.Name.Trim();
-        resolutionType.Description = NormalizeDescription(request.Description);
         resolutionType.RequiresPayment = request.RequiresPayment;
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -76,45 +73,11 @@ public class ResolutionTypeService : IResolutionTypeService
         return ToDto(resolutionType);
     }
 
-    // Which company a new resolution type belongs to (the SuperAdmin exception, see CLAUDE.md):
-    // - Admin: always their own company, from the JWT. Sending CompanyId is rejected (403).
-    // - SuperAdmin: has no company, so must say which one. It must exist.
-    // Same rules as StoreService. If UserService needs them too, extract a shared helper.
-    private async Task<int> ResolveCompanyIdAsync(int? requestedCompanyId, CancellationToken cancellationToken)
-    {
-        if (!_currentUser.IsSuperAdmin)
-        {
-            if (requestedCompanyId is not null)
-            {
-                throw new ForbiddenException("Only a SuperAdmin may choose the company. Leave CompanyId out.");
-            }
-
-            return _currentUser.CompanyId
-                ?? throw new InvalidOperationException("The authenticated user has no company claim.");
-        }
-
-        if (requestedCompanyId is not int companyId)
-        {
-            throw new BusinessRuleException("CompanyId is required when a SuperAdmin creates a resolution type.");
-        }
-
-        if (!await _db.Companies.AnyAsync(c => c.Id == companyId, cancellationToken))
-        {
-            throw new BusinessRuleException($"Company {companyId} does not exist.");
-        }
-
-        return companyId;
-    }
-
-    private static string? NormalizeDescription(string? description)
-        => string.IsNullOrWhiteSpace(description) ? null : description.Trim();
-
     private static ResolutionTypeResponseDto ToDto(ResolutionType resolutionType) => new()
     {
         ResolutionTypeId = resolutionType.Id,
         CompanyId = resolutionType.CompanyId,
         Name = resolutionType.Name,
-        Description = resolutionType.Description,
         RequiresPayment = resolutionType.RequiresPayment
     };
 }

@@ -11,7 +11,6 @@ public class ResolutionTypeConfiguration : IEntityTypeConfiguration<ResolutionTy
         builder.HasKey(r => r.Id);
 
         builder.Property(r => r.Name).IsRequired().HasMaxLength(100);
-        builder.Property(r => r.Description).HasMaxLength(500);
 
         builder.HasOne(r => r.Company)
             .WithMany(c => c.ResolutionTypes)
