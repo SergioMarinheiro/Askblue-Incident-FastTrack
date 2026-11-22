@@ -482,18 +482,8 @@ public class IncidentService : IIncidentService
     // Incidents the caller may see. The tenant filter limits the company; Staff are further
     // limited to their own incidents. Every read and every write starts here.
     // Tracked, so writes can use it; reads add AsNoTracking.
-    private IQueryable<Incident> VisibleIncidents()
-    {
-        IQueryable<Incident> query = _db.Incidents;
-
-        if (_currentUser.Role == UserRole.Staff)
-        {
-            var userId = _currentUser.UserId;
-            query = query.Where(i => i.CreatedByUserId == userId);
-        }
-
-        return query;
-    }
+    // The rule itself lives in IncidentVisibility, shared with IncidentCommentService.
+    private IQueryable<Incident> VisibleIncidents() => _db.Incidents.VisibleTo(_currentUser);
 
     // Store, location and resolution type are optional on a draft, but whatever is sent must
     // exist, not be deleted, and belong to the incident's company.
