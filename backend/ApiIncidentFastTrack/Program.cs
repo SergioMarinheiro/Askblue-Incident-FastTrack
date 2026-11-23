@@ -86,6 +86,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IIncidentCommentService, IncidentCommentService>();
+builder.Services.AddScoped<IIncidentAttachmentService, IncidentAttachmentService>();
+
+// Attachment files: a folder on disk for now (decided 2026-11-23). A relative RootPath is
+// resolved against the content root, so it doesn't depend on the folder the API is started from.
+var attachmentOptions = builder.Configuration.GetSection(AttachmentStorageOptions.SectionName).Get<AttachmentStorageOptions>()
+    ?? new AttachmentStorageOptions();
+var attachmentRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, attachmentOptions.RootPath));
+builder.Services.AddSingleton<IFileStorage>(new LocalFileStorage(attachmentRoot));
 builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<IResolutionTypeService, ResolutionTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();

@@ -3,3 +3,5 @@ obj/
 .vs/
 *.user
 TestResults/
+# Uploaded incident attachments (local file storage)
+App_Data/

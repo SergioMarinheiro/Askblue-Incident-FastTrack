@@ -22,13 +22,18 @@ public class IncidentService : IIncidentService
     private readonly ICurrentUser _currentUser;
     private readonly ICompanyResolver _companyResolver;
     private readonly TimeProvider _timeProvider;
+    private readonly IFileStorage _fileStorage;
+    private readonly ILogger<IncidentService> _logger;
 
-    public IncidentService(AppDbContext db, ICurrentUser currentUser, ICompanyResolver companyResolver, TimeProvider timeProvider)
+    public IncidentService(AppDbContext db, ICurrentUser currentUser, ICompanyResolver companyResolver, TimeProvider timeProvider,
+        IFileStorage fileStorage, ILogger<IncidentService> logger)
     {
         _db = db;
         _currentUser = currentUser;
         _companyResolver = companyResolver;
         _timeProvider = timeProvider;
+        _fileStorage = fileStorage;
+        _logger = logger;
     }
 
     // ---------- Reading ----------
@@ -218,7 +223,26 @@ public class IncidentService : IIncidentService
         _db.IncidentDuplicates.RemoveRange(flagsPointingHere);
         _db.Incidents.Remove(incident);
 
+        // The attachment rows go with the cascade, but their files on disk don't: collect them first.
+        var storageKeys = await _db.IncidentAttachments
+            .Where(a => a.IncidentId == incident.Id)
+            .Select(a => a.StoragePath)
+            .ToListAsync(cancellationToken);
+
         await _db.SaveChangesAsync(cancellationToken);
+
+        // After the save, like a single attachment delete: a leftover file has no row, so it is unreachable.
+        foreach (var storageKey in storageKeys)
+        {
+            try
+            {
+                await _fileStorage.DeleteAsync(storageKey, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not delete stored file {StorageKey} of deleted incident {IncidentId}.", storageKey, incident.Id);
+            }
+        }
     }
 
     // ---------- Status transitions ----------
