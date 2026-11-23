@@ -60,6 +60,7 @@ public class AuthService : IAuthService
         return new LoginResponseDto
         {
             Token = token,
+            UserId = user.Id,
             Name = $"{user.FirstName} {user.LastName}".Trim(),
             Role = user.Role.ToString(),
             ExpiresAt = expiresAt
