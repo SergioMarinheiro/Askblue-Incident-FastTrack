@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -20,7 +21,14 @@ var connectionString = builder.Configuration.GetConnectionString("IncidentFastTr
     ?? throw new InvalidOperationException(
         "Connection string 'IncidentFastTrack' is not configured. Set it with 'dotnet user-secrets set'.");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options => options
+    .UseSqlServer(connectionString)
+    // EF warns (10622) that Incident and Store have the tenant filter but their children
+    // (comments, attachments, history, duplicates, locations) don't. That is by design
+    // (CLAUDE.md, "Tenant filtering is mixed"): services always load the parent through its
+    // filter first. The rule this warning stands for still applies: never query a child table
+    // without checking its parent incident or store first, or another company's rows leak.
+    .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.PossibleIncorrectRequiredNavigationWithQueryFilterInteractionWarning)));
 
 // JWT settings: Issuer/Audience/ExpiryMinutes from appsettings.json, SigningKey from user secrets.
 // Fail at startup, not at the first login, if the key is missing or too short.
