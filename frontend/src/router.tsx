@@ -5,7 +5,8 @@ import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { UsersPage } from '@/pages/UsersPage'
 import { StoresPage } from '@/pages/StoresPage'
 import { ResolutionTypesPage } from '@/pages/ResolutionTypesPage'
-import { ADMIN_OR_ABOVE } from '@/auth/roles'
+import { ADMIN_OR_ABOVE, SUPERADMIN_ONLY } from '@/auth/roles'
+import { CompaniesPage } from '@/pages/CompaniesPage'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { OverviewPage } from '@/pages/OverviewPage'
@@ -75,6 +76,15 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
         handle: { crumb: 'Resolution types' },
+      },
+      {
+        path: 'companies',
+        element: (
+          <RequireRole roles={SUPERADMIN_ONLY}>
+            <CompaniesPage />
+          </RequireRole>
+        ),
+        handle: { crumb: 'Companies' },
       },
       { path: '*', element: <NotFoundPage />, handle: { crumb: 'Not found' } },
     ],

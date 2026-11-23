@@ -1,87 +1,97 @@
 import { parseUtc } from '@/lib/dates'
-import { IncidentStatus, type Incident } from './types'
+import { STATUS_INFO } from './labels'
+import { IncidentStatus as S, type Incident, type IncidentStatus } from './types'
 
 export type StepState = 'done' | 'current' | 'warning' | 'failed' | 'upcoming'
 
 export type TimelineStep = {
   label: string
   state: StepState
-  /** Short line under the label, e.g. "Waiting for a manager". */
-  note?: string
   date?: Date
 }
 
 const d = (value: string | null) => (value ? parseUtc(value) : undefined)
 
-/**
- * Builds the "Process status" steps for an incident.
- * Happy path: Registered → Submitted → Approved → Completed.
- * Rejected / Canceled / Duplicate replace the remaining steps with a closing step.
- */
-export function buildTimeline(incident: Incident): TimelineStep[] {
-  const registered: TimelineStep = { label: 'Registered', state: 'done', date: d(incident.createdAt) }
-  const approvedDone: TimelineStep = { label: 'Approved', state: 'done', date: d(incident.approvedAt) }
+/** Step names are the status names, so the timeline reads the same as the status badge. */
+const name = (status: IncidentStatus) => STATUS_INFO[status].label
 
-  switch (incident.status) {
-    case IncidentStatus.New:
+/**
+ * Builds the "Incident status" steps: the statuses the incident goes through.
+ * Happy path: New → Awaiting approval → Awaiting payment / Awaiting resolution → Completed.
+ * Sent back, Rejected, Duplicate and Canceled appear under their own names.
+ *
+ * `requiresPayment`: from the incident's resolution type, to name the step after approval.
+ * Undefined when unknown (no resolution type chosen yet, or the list hasn't loaded).
+ */
+export function buildTimeline(incident: Incident, requiresPayment?: boolean): TimelineStep[] {
+  const status = incident.status
+
+  const afterApprovalName =
+    status === S.AwaitingPayment || (status !== S.AwaitingResolution && requiresPayment === true)
+      ? name(S.AwaitingPayment)
+      : status === S.AwaitingResolution || requiresPayment === false
+        ? name(S.AwaitingResolution)
+        : `${name(S.AwaitingPayment)} or resolution`
+
+  const created: TimelineStep = { label: name(S.New), state: 'done', date: d(incident.createdAt) }
+  const approvalDone: TimelineStep = {
+    label: name(S.AwaitingApproval),
+    state: 'done',
+    date: d(incident.approvedAt),
+  }
+  const upcoming = (label: string): TimelineStep => ({ label, state: 'upcoming' })
+
+  switch (status) {
+    case S.New:
       return [
-        registered,
-        { label: 'Submitted', state: 'current', note: 'Draft — not submitted yet' },
-        { label: 'Approved', state: 'upcoming' },
-        { label: 'Completed', state: 'upcoming' },
+        { label: name(S.New), state: 'current', date: d(incident.createdAt) },
+        upcoming(name(S.AwaitingApproval)),
+        upcoming(afterApprovalName),
+        upcoming(name(S.Completed)),
       ]
-    case IncidentStatus.SentBack:
+    case S.AwaitingApproval:
       return [
-        registered,
-        { label: 'Sent back', state: 'warning', note: 'Changes requested — resubmit when fixed' },
-        { label: 'Approved', state: 'upcoming' },
-        { label: 'Completed', state: 'upcoming' },
+        created,
+        { label: name(S.AwaitingApproval), state: 'current' },
+        upcoming(afterApprovalName),
+        upcoming(name(S.Completed)),
       ]
-    case IncidentStatus.AwaitingApproval:
+    case S.SentBack:
       return [
-        registered,
-        { label: 'Submitted', state: 'done' },
-        { label: 'Approval', state: 'current', note: 'Waiting for a manager' },
-        { label: 'Completed', state: 'upcoming' },
+        created,
+        { label: name(S.SentBack), state: 'warning' },
+        upcoming(name(S.AwaitingApproval)),
+        upcoming(afterApprovalName),
+        upcoming(name(S.Completed)),
       ]
-    case IncidentStatus.AwaitingPayment:
-    case IncidentStatus.AwaitingResolution:
+    case S.AwaitingPayment:
+    case S.AwaitingResolution:
       return [
-        registered,
-        { label: 'Submitted', state: 'done' },
-        approvedDone,
-        {
-          label: 'Completed',
-          state: 'current',
-          note: incident.status === IncidentStatus.AwaitingPayment ? 'Awaiting payment' : 'Awaiting resolution',
-        },
+        created,
+        approvalDone,
+        { label: name(status), state: 'current' },
+        upcoming(name(S.Completed)),
       ]
-    case IncidentStatus.Completed:
+    case S.Completed:
       return [
-        registered,
-        { label: 'Submitted', state: 'done' },
-        approvedDone,
-        { label: 'Completed', state: 'done', date: d(incident.closedAt) },
+        created,
+        approvalDone,
+        { label: afterApprovalName, state: 'done' },
+        { label: name(S.Completed), state: 'done', date: d(incident.closedAt) },
       ]
-    case IncidentStatus.Rejected:
+    case S.Rejected:
+      return [created, { label: name(S.AwaitingApproval), state: 'done' }, { label: name(S.Rejected), state: 'failed', date: d(incident.closedAt) }]
+    case S.Duplicate:
+      return [created, { label: name(S.AwaitingApproval), state: 'done' }, { label: name(S.Duplicate), state: 'failed', date: d(incident.closedAt) }]
+    case S.Canceled:
+      // Drafts are deleted, not canceled, so a canceled incident was at least submitted.
       return [
-        registered,
-        { label: 'Submitted', state: 'done' },
-        { label: 'Rejected', state: 'failed', date: d(incident.closedAt) },
-      ]
-    case IncidentStatus.Duplicate:
-      return [
-        registered,
-        { label: 'Submitted', state: 'done' },
-        { label: 'Closed as duplicate', state: 'failed', date: d(incident.closedAt) },
-      ]
-    case IncidentStatus.Canceled:
-      return [
-        registered,
-        ...(incident.approvedAt ? [approvedDone] : []),
-        { label: 'Canceled', state: 'failed', date: d(incident.closedAt) },
+        created,
+        incident.approvedAt ? approvalDone : { label: name(S.AwaitingApproval), state: 'done' },
+        ...(incident.approvedAt ? [{ label: afterApprovalName, state: 'done' } as TimelineStep] : []),
+        { label: name(S.Canceled), state: 'failed', date: d(incident.closedAt) },
       ]
     default:
-      return [registered]
+      return [created]
   }
 }

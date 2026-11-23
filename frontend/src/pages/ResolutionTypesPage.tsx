@@ -10,7 +10,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
 import { buttonPrimaryClass, inputClass } from '@/components/ui/form'
 import { resolutionTypeKeys, useResolutionTypes, type ResolutionType } from '@/features/reference/api'
 import { ResolutionTypeModal } from '@/features/resolutionTypes/ResolutionTypeModal'
-import { useCompanies } from '@/features/users/api'
+import { useCompanies } from '@/features/companies/api'
 
 type Dialog = { kind: 'create' } | { kind: 'edit'; type: ResolutionType }
 

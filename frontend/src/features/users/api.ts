@@ -17,8 +17,6 @@ type UserDto = {
 
 export type User = Omit<UserDto, 'role'> & { role: Role; fullName: string }
 
-export type Company = { companyId: number; name: string }
-
 const toUser = (u: UserDto): User => ({
   ...u,
   role: NUMBER_TO_ROLE[u.role] ?? 'Staff',
@@ -34,16 +32,6 @@ export function useUsers() {
   return useQuery({
     queryKey: userKeys.all,
     queryFn: async ({ signal }) => (await apiFetch<UserDto[]>('/api/users', { signal })).map(toUser),
-  })
-}
-
-/** SuperAdmin only. */
-export function useCompanies(enabled: boolean) {
-  return useQuery({
-    queryKey: ['companies'],
-    queryFn: ({ signal }) => apiFetch<Company[]>('/api/companies', { signal }),
-    enabled,
-    staleTime: 5 * 60 * 1000,
   })
 }
 

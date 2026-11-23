@@ -3,7 +3,7 @@ import { parseUtc, parseWallClock } from '@/lib/dates'
 import { IncidentStatus, type Incident, type IncidentPriority, type IncidentType } from './types'
 
 export const STATUS_INFO: Record<IncidentStatus, { label: string; tone: BadgeTone }> = {
-  [IncidentStatus.New]: { label: 'Draft', tone: 'gray' },
+  [IncidentStatus.New]: { label: 'New', tone: 'gray' },
   [IncidentStatus.AwaitingApproval]: { label: 'Awaiting approval', tone: 'amber' },
   [IncidentStatus.AwaitingPayment]: { label: 'Awaiting payment', tone: 'violet' },
   [IncidentStatus.AwaitingResolution]: { label: 'Awaiting resolution', tone: 'blue' },

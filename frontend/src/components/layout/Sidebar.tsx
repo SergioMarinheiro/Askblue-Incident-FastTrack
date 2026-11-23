@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
-import { LayoutDashboard, ListChecks, Scale, Store, Users, X, type LucideIcon } from 'lucide-react'
+import { Building2, LayoutDashboard, ListChecks, Scale, Store, Users, X, type LucideIcon } from 'lucide-react'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/auth/useAuth'
-import { ADMIN_OR_ABOVE, hasRole, ROLE_LABELS, type Role } from '@/auth/roles'
+import { ADMIN_OR_ABOVE, hasRole, ROLE_LABELS, SUPERADMIN_ONLY, type Role } from '@/auth/roles'
 import { Logo } from './Logo'
 import { Avatar } from './Avatar'
 
@@ -33,6 +33,7 @@ const sections: NavSection[] = [
       { to: '/users', label: 'Users', icon: Users, roles: USER_LIST_ROLES },
       { to: '/stores', label: 'Stores', icon: Store, roles: ADMIN_OR_ABOVE },
       { to: '/resolution-types', label: 'Resolution types', icon: Scale, roles: ADMIN_OR_ABOVE },
+      { to: '/companies', label: 'Companies', icon: Building2, roles: SUPERADMIN_ONLY },
     ],
   },
 ]

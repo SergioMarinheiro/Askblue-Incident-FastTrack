@@ -15,7 +15,7 @@ type DialogKey = 'approve' | 'reject' | 'sendBack' | 'complete' | 'cancel' | 'di
 
 type DialogConfig = {
   title: string
-  description: ReactNode
+  description?: ReactNode
   confirmLabel: string
   tone?: 'primary' | 'danger'
   textField?: { label: string; placeholder?: string; maxLength: number }
@@ -53,13 +53,12 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
   const dialogs: Record<DialogKey, DialogConfig> = {
     approve: {
       title: `Approve ${ref}?`,
-      description: 'The incident moves on to payment or resolution, depending on its resolution type.',
+      description: 'Are you sure you want to approve this incident?',
       confirmLabel: 'Approve',
       run: () => incidentActions.approve(id),
     },
     reject: {
       title: `Reject ${ref}?`,
-      description: 'Rejecting closes the incident for good. The reporter will see your reason.',
       confirmLabel: 'Reject incident',
       tone: 'danger',
       textField: { label: 'Reason', placeholder: 'Why is this incident rejected?', maxLength: 1000 },
@@ -67,33 +66,28 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
     },
     sendBack: {
       title: `Send ${ref} back?`,
-      description: 'The reporter can make changes and submit it again. Your message is added as a comment.',
       confirmLabel: 'Send back',
       textField: { label: 'What needs to change', placeholder: 'e.g. Add the customer’s phone number and a photo.', maxLength: 4000 },
       run: (text) => incidentActions.sendBack(id, text),
     },
     complete: {
       title: `Mark ${ref} as completed?`,
-      description: 'Use this once the payment or resolution is done. The incident is then closed.',
       confirmLabel: 'Mark as completed',
       run: () => incidentActions.complete(id),
     },
     cancel: {
       title: `Cancel ${ref}?`,
-      description: 'Canceling closes the incident. This cannot be undone.',
       confirmLabel: 'Cancel incident',
       tone: 'danger',
       run: () => incidentActions.cancel(id),
     },
     dismiss: {
       title: 'Not a duplicate?',
-      description: 'The possible-duplicate warning is cleared and the incident can be approved as normal.',
       confirmLabel: 'Not a duplicate',
       run: () => incidentActions.dismissDuplicates(id),
     },
     confirmDuplicate: {
       title: `Close ${ref} as a duplicate?`,
-      description: 'The incident is closed as a duplicate of an existing one. Your explanation is added as a comment.',
       confirmLabel: 'Close as duplicate',
       tone: 'danger',
       textField: { label: 'Explanation', placeholder: 'e.g. Same fall as IF-0012.', maxLength: 4000 },
@@ -267,7 +261,6 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
       {confirmDelete && (
         <ActionDialog
           title={`Delete draft ${ref}?`}
-          description="The draft, its comments and its attached files are removed for good. This cannot be undone."
           confirmLabel="Delete draft"
           tone="danger"
           onClose={() => setConfirmDelete(false)}

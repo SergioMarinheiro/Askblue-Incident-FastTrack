@@ -10,7 +10,7 @@ import { buttonPrimaryClass, inputClass } from '@/components/ui/form'
 import { storeKeys, useStores, type Store } from '@/features/reference/api'
 import { NewStoreModal } from '@/features/stores/NewStoreModal'
 import { StoreLocationsPanel } from '@/features/stores/StoreLocationsPanel'
-import { useCompanies } from '@/features/users/api'
+import { useCompanies } from '@/features/companies/api'
 import { cn } from '@/lib/cn'
 
 export function StoresPage() {

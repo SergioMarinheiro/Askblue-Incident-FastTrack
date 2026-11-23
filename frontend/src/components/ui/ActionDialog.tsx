@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn'
 
 type Props = {
   title: string
-  description: ReactNode
+  description?: ReactNode
   confirmLabel: string
   tone?: 'primary' | 'danger'
   /** When set, asks for a required text (reason, comment). */
@@ -58,10 +58,10 @@ export function ActionDialog({ title, description, confirmLabel, tone = 'primary
         </>
       }
     >
-      <div className="text-sm text-muted">{description}</div>
+      {description && <div className="text-sm text-muted">{description}</div>}
 
       {textField && (
-        <div className="mt-4">
+        <div className={description ? 'mt-4' : undefined}>
           <label htmlFor="action-text" className="block text-sm font-semibold">
             {textField.label}
             <span className="ml-0.5 text-red-600" aria-hidden>

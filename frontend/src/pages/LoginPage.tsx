@@ -22,8 +22,8 @@ export function LoginPage() {
     setError(null)
     setSubmitting(true)
     try {
-      await login({ email: email.trim(), password })
-      navigate(from, { replace: true })
+      const { mayReturnToPreviousPage } = await login({ email: email.trim(), password })
+      navigate(mayReturnToPreviousPage ? from : '/overview', { replace: true })
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.')
       setSubmitting(false)

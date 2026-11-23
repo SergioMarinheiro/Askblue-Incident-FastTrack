@@ -6,7 +6,8 @@ export type CurrentUser = { userId: number; name: string; role: Role }
 
 export type AuthContextValue = {
   user: CurrentUser | null
-  login: (request: LoginRequest) => Promise<void>
+  /** `mayReturnToPreviousPage`: false when a different account signs in than the one before. */
+  login: (request: LoginRequest) => Promise<{ mayReturnToPreviousPage: boolean }>
   logout: () => void
 }
 

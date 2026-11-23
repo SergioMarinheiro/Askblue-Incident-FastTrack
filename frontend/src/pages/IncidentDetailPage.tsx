@@ -20,6 +20,7 @@ import {
   useIncidentAttachments,
   useIncidentComments,
 } from '@/features/incidents/api'
+import { useResolutionTypes } from '@/features/reference/api'
 import { ActivityCard } from '@/features/incidents/ActivityCard'
 import { IncidentActions } from '@/features/incidents/IncidentActions'
 import { incidentPlace, incidentRef, incidentTitle, PRIORITY_LABELS, TYPE_LABELS } from '@/features/incidents/labels'
@@ -57,6 +58,9 @@ export function IncidentDetailPage() {
 function IncidentDetail({ incident }: { incident: Incident }) {
   const { user } = useAuth()
   const perms = incidentPermissions(user, incident)
+  // Whether approval leads to "Awaiting payment" or "Awaiting resolution", for the status timeline.
+  const resolutionTypes = useResolutionTypes()
+  const requiresPayment = resolutionTypes.data?.find((r) => r.resolutionTypeId === incident.resolutionTypeId)?.requiresPayment
   const place = incidentPlace(incident)
   const subtitle = [incident.incidentType ? TYPE_LABELS[incident.incidentType] : null, place].filter(Boolean).join(' · ')
 
@@ -113,9 +117,9 @@ function IncidentDetail({ incident }: { incident: Incident }) {
             <IncidentActions incident={incident} perms={perms} />
           </div>
           <Card>
-            <CardHeader title="Process status" />
+            <CardHeader title="Incident status" />
             <div className="px-6 pb-6">
-              <ProcessTimeline steps={buildTimeline(incident)} />
+              <ProcessTimeline steps={buildTimeline(incident, requiresPayment)} />
             </div>
           </Card>
           <AttachmentsCard incidentId={incident.incidentId} canChange={perms.changeFiles} />

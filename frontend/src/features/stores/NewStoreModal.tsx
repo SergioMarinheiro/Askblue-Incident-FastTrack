@@ -5,7 +5,7 @@ import { controlClass, FormField } from '@/components/ui/FormField'
 import { Modal } from '@/components/ui/Modal'
 import { buttonPrimaryClass, inputClass } from '@/components/ui/form'
 import { createStore, type Store } from '@/features/reference/api'
-import { useCompanies } from '@/features/users/api'
+import { useCompanies } from '@/features/companies/api'
 
 type Errors = { name?: string; address?: string; companyId?: string }
 

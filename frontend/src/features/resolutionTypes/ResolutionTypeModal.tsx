@@ -5,7 +5,7 @@ import { controlClass, FormField } from '@/components/ui/FormField'
 import { Modal } from '@/components/ui/Modal'
 import { buttonPrimaryClass, inputClass } from '@/components/ui/form'
 import { createResolutionType, updateResolutionType, type ResolutionType } from '@/features/reference/api'
-import { useCompanies } from '@/features/users/api'
+import { useCompanies } from '@/features/companies/api'
 import { cn } from '@/lib/cn'
 
 type Errors = { name?: string; companyId?: string }

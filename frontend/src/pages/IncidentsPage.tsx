@@ -91,10 +91,7 @@ export function IncidentsPage() {
       </div>
 
       <Card>
-        <CardHeader
-          title={status === null ? 'All incidents' : STATUS_INFO[status].label}
-          actions={data && `${filtered.length} ${filtered.length === 1 ? 'incident' : 'incidents'}`}
-        />
+        <CardHeader title={status === null ? 'All incidents' : STATUS_INFO[status].label} />
 
         {isPending ? (
           <LoadingState label="Loading incidents…" />

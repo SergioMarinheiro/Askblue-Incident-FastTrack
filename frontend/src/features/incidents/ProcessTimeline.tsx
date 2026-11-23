@@ -29,8 +29,6 @@ export function ProcessTimeline({ steps }: { steps: TimelineStep[] }) {
             <div className="min-w-0">
               <p className={cn('text-sm font-semibold', step.state === 'upcoming' && 'text-muted')}>{step.label}</p>
               {step.date && <p className="text-xs text-muted">{formatDateTime(step.date)}</p>}
-              {step.note && <p className="text-xs text-muted">{step.note}</p>}
-              {!step.date && !step.note && step.state === 'upcoming' && <p className="text-xs text-muted">Not reached yet</p>}
             </div>
           </li>
         )

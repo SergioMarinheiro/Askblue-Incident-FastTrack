@@ -17,7 +17,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const sessionRef = useRef(session)
   sessionRef.current = session
 
+  // Who was signed in before the last logout (explicit or expired). Login only sends someone back
+  // to the page they were on if it's the same person; a different account starts at the overview.
+  const previousUserIdRef = useRef<number | null>(null)
+
   const logout = useCallback(() => {
+    if (sessionRef.current) previousUserIdRef.current = sessionRef.current.userId
     clearSession()
     setSession(null)
     queryClient.clear() // drop cached data from the previous user
@@ -61,6 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     saveSession(next)
     setSession(next)
+    // Nobody signed in before in this tab (e.g. opened a link), or the same person again.
+    const previous = previousUserIdRef.current
+    return { mayReturnToPreviousPage: previous === null || previous === next.userId }
   }, [])
 
   const value = useMemo<AuthContextValue>(
