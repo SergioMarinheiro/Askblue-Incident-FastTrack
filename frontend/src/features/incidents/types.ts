@@ -97,6 +97,20 @@ export type DuplicateFlag = {
   reviewedAt: string | null
 }
 
+// backend DTOs/Incidents/IncidentHistoryResponseDto.cs. One changed field; rows saved together share changeSetId.
+// Values are text: enums by name, dates ISO 8601, amounts with ".", store/location/resolution type as ids.
+export type HistoryEntry = {
+  historyId: number
+  changeSetId: string
+  fieldName: string
+  oldValue: string | null
+  newValue: string | null
+  changedByUserId: number
+  changedByUserName: string
+  /** UTC */
+  changedAt: string
+}
+
 // backend DTOs/Comments/CommentResponseDto.cs
 export type Comment = {
   incidentCommentId: number

@@ -20,6 +20,7 @@ import {
   useIncidentAttachments,
   useIncidentComments,
 } from '@/features/incidents/api'
+import { ActivityCard } from '@/features/incidents/ActivityCard'
 import { IncidentActions } from '@/features/incidents/IncidentActions'
 import { incidentPlace, incidentRef, incidentTitle, PRIORITY_LABELS, TYPE_LABELS } from '@/features/incidents/labels'
 import { incidentPermissions } from '@/features/incidents/permissions'
@@ -100,6 +101,7 @@ function IncidentDetail({ incident }: { incident: Incident }) {
         <div className="space-y-6 lg:col-span-2">
           <DetailsCard incident={incident} />
           <CommentsCard incidentId={incident.incidentId} />
+          <ActivityCard incident={incident} />
         </div>
         <div className="space-y-6">
           <IncidentActions incident={incident} perms={perms} />

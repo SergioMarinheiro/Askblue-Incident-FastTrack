@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { ApiError, apiDownload, apiFetch } from '@/lib/api'
-import type { Attachment, Comment, DuplicateFlag, Incident, IncidentInput, PossibleDuplicate } from './types'
+import type { Attachment, Comment, DuplicateFlag, HistoryEntry, Incident, IncidentInput, PossibleDuplicate } from './types'
 
 export const incidentKeys = {
   all: ['incidents'] as const,
@@ -30,6 +30,14 @@ export function useIncidentComments(id: number) {
   return useQuery({
     queryKey: incidentKeys.comments(id),
     queryFn: ({ signal }) => apiFetch<Comment[]>(`/api/incidents/${id}/comments`, { signal }),
+  })
+}
+
+/** Every recorded change, oldest first. */
+export function useIncidentHistory(id: number) {
+  return useQuery({
+    queryKey: [...incidentKeys.detail(id), 'history'],
+    queryFn: ({ signal }) => apiFetch<HistoryEntry[]>(`/api/incidents/${id}/history`, { signal }),
   })
 }
 
