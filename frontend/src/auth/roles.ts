@@ -13,6 +13,10 @@ export const ROLE_LABELS: Record<Role, string> = {
   Staff: 'Staff',
 }
 
+/** Same groups as the backend AuthPolicies. */
+export const MANAGER_OR_ABOVE = ['Manager', 'Admin', 'SuperAdmin'] as const satisfies readonly Role[]
+export const ADMIN_OR_ABOVE = ['Admin', 'SuperAdmin'] as const satisfies readonly Role[]
+
 /** True when the role is one of the allowed roles. Use it to show or hide buttons and menu items. */
 export function hasRole(role: Role | undefined, allowed: readonly Role[]) {
   return role !== undefined && allowed.includes(role)

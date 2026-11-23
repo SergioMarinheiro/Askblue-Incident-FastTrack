@@ -332,7 +332,6 @@ export function IncidentEditor({ incident }: { incident?: Incident }) {
               required={canSubmit}
               error={errors.resolutionTypeId ?? (resolutionTypes.isError ? resolutionTypes.error.message : undefined)}
               hint={isSuperAdmin && !storeId ? 'Choose a store first.' : undefined}
-              className="sm:col-span-2"
             >
               <select
                 className={controlClass(inputClass, errors.resolutionTypeId)}
@@ -347,6 +346,10 @@ export function IncidentEditor({ incident }: { incident?: Incident }) {
                   </option>
                 ))}
               </select>
+            </FormField>
+
+            <FormField id="compensation" label="Estimated compensation (€)" error={errors.compensation} hint="Optional.">
+              <input type="text" inputMode="decimal" placeholder="0.00" className={controlClass(inputClass, errors.compensation)} {...bind('compensation')} />
             </FormField>
 
             <FormField
@@ -380,10 +383,7 @@ export function IncidentEditor({ incident }: { incident?: Incident }) {
             <FormField id="customerPhone" label="Phone" required={canSubmit} error={errors.customerPhone}>
               <input type="tel" autoComplete="off" className={controlClass(inputClass, errors.customerPhone)} {...bind('customerPhone')} />
             </FormField>
-            <FormField id="compensation" label="Estimated compensation (€)" error={errors.compensation} hint="Optional.">
-              <input type="text" inputMode="decimal" placeholder="0.00" className={controlClass(inputClass, errors.compensation)} {...bind('compensation')} />
-            </FormField>
-            <FormField id="customerAddress" label="Address" required={canSubmit} error={errors.customerAddress} className="sm:col-span-2">
+            <FormField id="customerAddress" label="Address" required={canSubmit} error={errors.customerAddress}>
               <input type="text" autoComplete="off" className={controlClass(inputClass, errors.customerAddress)} {...bind('customerAddress')} />
             </FormField>
           </div>

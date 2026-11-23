@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertCircle, Ban, Check, CheckCheck, CopyX, Loader2, Pencil, Send, Undo2, X } from 'lucide-react'
+import { AlertCircle, Ban, Check, CheckCheck, CopyX, Loader2, Pencil, Send, Trash2, Undo2, X } from 'lucide-react'
 import { ActionDialog } from '@/components/ui/ActionDialog'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { cn } from '@/lib/cn'
@@ -38,6 +38,7 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
   const ref = incidentRef(id)
 
   const [dialog, setDialog] = useState<DialogKey | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [duplicates, setDuplicates] = useState<PossibleDuplicate[] | null>(null)
@@ -132,13 +133,18 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
     }
   }
 
+  /** Deletes the draft and leaves the page (its detail no longer exists). Throws on failure. */
+  async function deleteAndLeave() {
+    await deleteDraftIncident(id)
+    queryClient.removeQueries({ queryKey: incidentKeys.detail(id) })
+    await queryClient.invalidateQueries({ queryKey: incidentKeys.list() })
+    navigate('/incidents', { replace: true })
+  }
+
   async function handleDelete() {
     setDupBusy('delete')
     try {
-      await deleteDraftIncident(id)
-      queryClient.removeQueries({ queryKey: incidentKeys.detail(id) })
-      await queryClient.invalidateQueries({ queryKey: incidentKeys.list() })
-      navigate('/incidents', { replace: true })
+      await deleteAndLeave()
     } catch (err) {
       setDuplicates(null)
       setSubmitError(err instanceof Error ? err.message : 'Could not delete the draft.')
@@ -209,6 +215,13 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
         Reject
       </button>,
     )
+  if (perms.deleteDraft)
+    buttons.push(
+      <button key="delete" type="button" onClick={() => setConfirmDelete(true)} className={cn(actionButton, tones.danger)}>
+        <Trash2 className="size-4" aria-hidden />
+        Delete draft
+      </button>,
+    )
   if (perms.cancel)
     buttons.push(
       <button key="cancel" type="button" onClick={() => setDialog('cancel')} className={cn(actionButton, tones.danger)}>
@@ -248,6 +261,17 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
             setDialog(null)
             await applyUpdate(updated)
           }}
+        />
+      )}
+
+      {confirmDelete && (
+        <ActionDialog
+          title={`Delete draft ${ref}?`}
+          description="The draft, its comments and its attached files are removed for good. This cannot be undone."
+          confirmLabel="Delete draft"
+          tone="danger"
+          onClose={() => setConfirmDelete(false)}
+          onConfirm={deleteAndLeave}
         />
       )}
 

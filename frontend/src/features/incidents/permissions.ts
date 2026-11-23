@@ -7,14 +7,15 @@ import { IncidentStatus as S, type Incident, type IncidentStatus } from './types
 
 const MANAGER_OR_ABOVE = ['Manager', 'Admin', 'SuperAdmin'] as const
 
-const OPEN: IncidentStatus[] = [S.New, S.AwaitingApproval, S.SentBack, S.AwaitingPayment, S.AwaitingResolution]
+// Statuses that can be canceled. Not New: a draft is deleted by its creator instead.
+const CANCELABLE: IncidentStatus[] = [S.AwaitingApproval, S.SentBack, S.AwaitingPayment, S.AwaitingResolution]
 const FILES_MAY_CHANGE: IncidentStatus[] = [S.New, S.AwaitingApproval, S.SentBack]
 
 export type IncidentPermissions = {
   isCreator: boolean
   edit: boolean
   submit: boolean
-  /** Hard delete; only offered from the duplicate warning. */
+  /** Hard delete of a draft (status New) by its creator. Drafts are deleted, never canceled. */
   deleteDraft: boolean
   changeFiles: boolean
   approve: boolean
@@ -61,6 +62,6 @@ export function incidentPermissions(user: CurrentUser | null, incident: Incident
     sendBack: isReviewer && awaitingApproval,
     reviewDuplicates: isReviewer && awaitingApproval && incident.hasPendingDuplicateFlag,
     complete: status === S.AwaitingPayment || status === S.AwaitingResolution,
-    cancel: OPEN.includes(status),
+    cancel: CANCELABLE.includes(status),
   }
 }

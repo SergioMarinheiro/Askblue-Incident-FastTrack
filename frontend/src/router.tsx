@@ -3,6 +3,8 @@ import { RequireAuth } from '@/auth/RequireAuth'
 import { RequireRole } from '@/auth/RequireRole'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { UsersPage } from '@/pages/UsersPage'
+import { StoresPage } from '@/pages/StoresPage'
+import { ADMIN_OR_ABOVE } from '@/auth/roles'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { OverviewPage } from '@/pages/OverviewPage'
@@ -54,6 +56,15 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
         handle: { crumb: 'Users' },
+      },
+      {
+        path: 'stores',
+        element: (
+          <RequireRole roles={ADMIN_OR_ABOVE}>
+            <StoresPage />
+          </RequireRole>
+        ),
+        handle: { crumb: 'Stores' },
       },
       { path: '*', element: <NotFoundPage />, handle: { crumb: 'Not found' } },
     ],

@@ -191,10 +191,10 @@ public class IncidentService : IIncidentService
         return await GetIncidentByIdAsync(incident.Id, cancellationToken);
     }
 
-    // The only way an incident is ever deleted (hard delete): the creator acknowledges that the
-    // duplicate check found the same incident. Only while New (decided 2026-11-22), and only if the
-    // check, run again now, still finds matches.
-    public async Task DeleteDuplicateIncidentAsync(int id, CancellationToken cancellationToken)
+    // The only way an incident is ever deleted (hard delete): its creator deletes it while it is
+    // still a draft (New). Decided 2026-11-23: a draft is deleted, never canceled; before that,
+    // deleting needed the duplicate check to find matches. Once submitted, use Cancel instead.
+    public async Task DeleteDraftIncidentAsync(int id, CancellationToken cancellationToken)
     {
         var incident = await LoadForChangeAsync(id, cancellationToken);
 
@@ -204,14 +204,6 @@ public class IncidentService : IIncidentService
         }
 
         EnsureStatus(incident, "deleted", IncidentStatus.New);
-
-        var matches = await FindPossibleDuplicatesAsync(incident, cancellationToken);
-
-        if (matches.Count == 0)
-        {
-            throw new ConflictException(
-                "An incident can only be deleted when the duplicate check finds possible duplicates. Cancel it instead.");
-        }
 
         // Its own comments, history, attachments and flags are removed by the database (Cascade).
         // Flags on OTHER incidents that point at it are Restrict, so they are removed here explicitly:
@@ -419,14 +411,19 @@ public class IncidentService : IIncidentService
         return await GetIncidentByIdAsync(incident.Id, cancellationToken);
     }
 
-    // Staff (own, guaranteed by VisibleIncidents), Manager, Admin, SuperAdmin: any open status -> Canceled.
+    // Staff (own, guaranteed by VisibleIncidents), Manager, Admin, SuperAdmin: any submitted open status -> Canceled.
+    // A draft (New) is deleted instead (DeleteDraftIncidentAsync, decided 2026-11-23).
     // Doesn't set ClosedAt: CLAUDE.md only asks that for Completed and Duplicate.
     public async Task<IncidentResponseDto> CancelIncidentAsync(int id, CancellationToken cancellationToken)
     {
         var incident = await LoadForChangeAsync(id, cancellationToken);
 
+        if (incident.Status == IncidentStatus.New)
+        {
+            throw new ConflictException("A draft can't be canceled. Its creator can delete it instead.");
+        }
+
         EnsureStatus(incident, "canceled",
-            IncidentStatus.New,
             IncidentStatus.AwaitingApproval,
             IncidentStatus.SentBack,
             IncidentStatus.AwaitingPayment,

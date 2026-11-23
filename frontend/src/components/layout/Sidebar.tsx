@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router'
-import { FilePlus2, LayoutDashboard, ListChecks, Users, type LucideIcon } from 'lucide-react'
+import { FilePlus2, LayoutDashboard, ListChecks, Store, Users, type LucideIcon } from 'lucide-react'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/auth/useAuth'
-import { hasRole, ROLE_LABELS, type Role } from '@/auth/roles'
+import { ADMIN_OR_ABOVE, hasRole, ROLE_LABELS, type Role } from '@/auth/roles'
 import { Logo } from './Logo'
 import { Avatar } from './Avatar'
 
@@ -29,7 +29,10 @@ const sections: NavSection[] = [
   },
   {
     title: 'Administration',
-    items: [{ to: '/users', label: 'Users', icon: Users, roles: USER_LIST_ROLES }],
+    items: [
+      { to: '/users', label: 'Users', icon: Users, roles: USER_LIST_ROLES },
+      { to: '/stores', label: 'Stores', icon: Store, roles: ADMIN_OR_ABOVE },
+    ],
   },
 ]
 

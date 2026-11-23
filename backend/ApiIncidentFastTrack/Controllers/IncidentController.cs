@@ -68,12 +68,12 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // The incident's creator (New only): hard delete after acknowledging a duplicate found at submit.
-    // This is the only way an incident is ever deleted.
+    // The incident's creator, while it is a draft (New): hard delete.
+    // This is the only way an incident is ever deleted; once submitted, it can only be canceled.
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteDuplicateIncident(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteDraftIncident(int id, CancellationToken cancellationToken)
     {
-        await _incidentService.DeleteDuplicateIncidentAsync(id, cancellationToken);
+        await _incidentService.DeleteDraftIncidentAsync(id, cancellationToken);
 
         return NoContent();
     }
@@ -130,7 +130,7 @@ public class IncidentController : ControllerBase
         return Ok(incident);
     }
 
-    // Staff (own)/Manager/Admin: any open status -> Canceled.
+    // Staff (own)/Manager/Admin: any submitted open status -> Canceled. Not a draft (New): delete it instead.
     [HttpPost("{id:int}/cancel")]
     public async Task<IActionResult> CancelIncident(int id, CancellationToken cancellationToken)
     {

@@ -17,8 +17,8 @@ public interface IIncidentService
     Task<IncidentResponseDto> CreateIncidentAsync(CreateIncidentRequestDto request, CancellationToken cancellationToken);
     Task<IncidentResponseDto> UpdateIncidentAsync(int id, UpdateIncidentRequestDto request, CancellationToken cancellationToken);
 
-    // Hard delete: only when Staff acknowledge a duplicate found at submit
-    Task DeleteDuplicateIncidentAsync(int id, CancellationToken cancellationToken);
+    // Hard delete: the creator, only while the incident is a draft (New)
+    Task DeleteDraftIncidentAsync(int id, CancellationToken cancellationToken);
 
     // Status transitions
     Task<SubmitIncidentResultDto> SubmitIncidentAsync(int id, SubmitIncidentRequestDto request, CancellationToken cancellationToken);

@@ -26,6 +26,29 @@ export function useLocations(storeId: number | null) {
   })
 }
 
+/** Prefix of every store/location query; invalidate it after any change. */
+export const storeKeys = { all: ['stores'] as const }
+
+// ---- Writes (Admin, SuperAdmin) ----
+
+/** `companyId` only from a SuperAdmin. */
+export function createStore(input: { name: string; address: string | null; companyId?: number }) {
+  return apiFetch<Store>('/api/stores', { method: 'POST', body: input })
+}
+
+/** Soft delete: old incidents keep showing the store's name. Its locations go with it. */
+export function deleteStore(storeId: number) {
+  return apiFetch<void>(`/api/stores/${storeId}`, { method: 'DELETE' })
+}
+
+export function createLocation(storeId: number, name: string) {
+  return apiFetch<Location>(`/api/stores/${storeId}/locations`, { method: 'POST', body: { name } })
+}
+
+export function deleteLocation(storeId: number, locationId: number) {
+  return apiFetch<void>(`/api/stores/${storeId}/locations/${locationId}`, { method: 'DELETE' })
+}
+
 export function useResolutionTypes() {
   return useQuery({
     queryKey: ['resolution-types'],

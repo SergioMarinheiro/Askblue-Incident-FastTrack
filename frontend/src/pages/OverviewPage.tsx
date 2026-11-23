@@ -73,7 +73,7 @@ export function OverviewPage() {
             <span className={cn('absolute inset-x-0 top-0 h-1', c.accent)} aria-hidden />
             <p className="text-sm font-semibold text-muted">{c.label}</p>
             <p className="mt-2 text-3xl font-bold tabular-nums">
-              {isPending ? <span className="text-muted/50">–</span> : String(counts.get(c.status) ?? 0).padStart(2, '0')}
+              {isPending ? <span className="text-muted/50">–</span> : counts.get(c.status) ?? 0}
             </p>
             <p className="mt-1 text-xs text-muted">{c.hint}</p>
           </Link>
