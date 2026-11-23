@@ -49,6 +49,18 @@ export function deleteLocation(storeId: number, locationId: number) {
   return apiFetch<void>(`/api/stores/${storeId}/locations/${locationId}`, { method: 'DELETE' })
 }
 
+export const resolutionTypeKeys = { all: ['resolution-types'] as const }
+
+/** `companyId` only from a SuperAdmin. */
+export function createResolutionType(input: { name: string; requiresPayment: boolean; companyId?: number }) {
+  return apiFetch<ResolutionType>('/api/resolution-types', { method: 'POST', body: input })
+}
+
+/** Company can't change. Changing requiresPayment doesn't move incidents already approved. */
+export function updateResolutionType(id: number, input: { name: string; requiresPayment: boolean }) {
+  return apiFetch<ResolutionType>(`/api/resolution-types/${id}`, { method: 'PUT', body: input })
+}
+
 export function useResolutionTypes() {
   return useQuery({
     queryKey: ['resolution-types'],

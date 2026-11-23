@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { Plus, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
-import { buttonPrimaryClass, inputClass } from '@/components/ui/form'
+import { inputClass } from '@/components/ui/form'
 import { useIncidents } from '@/features/incidents/api'
 import { IncidentTable } from '@/features/incidents/IncidentTable'
 import { incidentRef, STATUS_INFO, STATUS_ORDER } from '@/features/incidents/labels'
@@ -61,12 +61,6 @@ export function IncidentsPage() {
       <PageHeader
         title="Incidents"
         subtitle="Browse and follow up on submitted incidents."
-        actions={
-          <Link to="/incidents/new" className={buttonPrimaryClass}>
-            <Plus className="size-4" aria-hidden />
-            New incident
-          </Link>
-        }
       />
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">

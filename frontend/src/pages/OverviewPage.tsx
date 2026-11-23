@@ -1,12 +1,11 @@
 import { useMemo, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { ArrowRight, ClipboardCheck, PenLine, Plus } from 'lucide-react'
+import { ArrowRight, ClipboardCheck, PenLine } from 'lucide-react'
 import { useAuth } from '@/auth/useAuth'
 import { hasRole } from '@/auth/roles'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
-import { buttonPrimaryClass } from '@/components/ui/form'
 import { useIncidents } from '@/features/incidents/api'
 import { IncidentTable } from '@/features/incidents/IncidentTable'
 import { IncidentStatus, type Incident } from '@/features/incidents/types'
@@ -45,12 +44,6 @@ export function OverviewPage() {
       <PageHeader
         title={`${greeting()}${firstName ? `, ${firstName}` : ''}!`}
         subtitle={isReviewer ? "Here is a summary of your organisation's incidents." : 'Here is a summary of your incidents.'}
-        actions={
-          <Link to="/incidents/new" className={buttonPrimaryClass}>
-            <Plus className="size-4" aria-hidden />
-            New incident
-          </Link>
-        }
       />
 
       {/* Things waiting for this user */}

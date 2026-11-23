@@ -4,6 +4,7 @@ import { RequireRole } from '@/auth/RequireRole'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { UsersPage } from '@/pages/UsersPage'
 import { StoresPage } from '@/pages/StoresPage'
+import { ResolutionTypesPage } from '@/pages/ResolutionTypesPage'
 import { ADMIN_OR_ABOVE } from '@/auth/roles'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { LoginPage } from '@/pages/LoginPage'
@@ -65,6 +66,15 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
         handle: { crumb: 'Stores' },
+      },
+      {
+        path: 'resolution-types',
+        element: (
+          <RequireRole roles={ADMIN_OR_ABOVE}>
+            <ResolutionTypesPage />
+          </RequireRole>
+        ),
+        handle: { crumb: 'Resolution types' },
       },
       { path: '*', element: <NotFoundPage />, handle: { crumb: 'Not found' } },
     ],

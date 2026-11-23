@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router'
-import { FilePlus2, LayoutDashboard, ListChecks, Store, Users, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, ListChecks, Scale, Store, Users, type LucideIcon } from 'lucide-react'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/auth/useAuth'
@@ -24,7 +24,6 @@ const sections: NavSection[] = [
     items: [
       { to: '/overview', label: 'Overview', icon: LayoutDashboard },
       { to: '/incidents', label: 'Incidents', icon: ListChecks, end: true },
-      { to: '/incidents/new', label: 'New incident', icon: FilePlus2 },
     ],
   },
   {
@@ -32,6 +31,7 @@ const sections: NavSection[] = [
     items: [
       { to: '/users', label: 'Users', icon: Users, roles: USER_LIST_ROLES },
       { to: '/stores', label: 'Stores', icon: Store, roles: ADMIN_OR_ABOVE },
+      { to: '/resolution-types', label: 'Resolution types', icon: Scale, roles: ADMIN_OR_ABOVE },
     ],
   },
 ]
@@ -49,7 +49,20 @@ export function Sidebar() {
         <Logo />
       </div>
 
-      <nav className="mt-10 flex-1 space-y-8 overflow-y-auto">
+      {/* The main action, shown as a button so it stands out from the menu. */}
+      <NavLink
+        to="/incidents/new"
+        className={({ isActive }) =>
+          cn(
+            'mt-8 flex w-full items-center justify-center gap-2 self-stretch rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-colors',
+            isActive ? 'bg-brand-700 ring-2 ring-white/30' : 'bg-brand-600 hover:bg-brand-500',
+          )
+        }
+      >
+        New incident
+      </NavLink>
+
+      <nav className="mt-8 flex-1 space-y-8 overflow-y-auto">
         {visibleSections.map((section) => (
           <div key={section.title}>
             <p className="px-3 text-xs font-semibold tracking-wider text-white/50 uppercase">{section.title}</p>
