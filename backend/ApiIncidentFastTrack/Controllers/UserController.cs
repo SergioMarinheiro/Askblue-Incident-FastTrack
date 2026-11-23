@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiIncidentFastTrack.Controllers;
 
 // List/get: Manager, Admin (own company), SuperAdmin.
-// Create/update: Admin (own company), SuperAdmin.
+// Create/update/reset password: Admin (own company), SuperAdmin.
 // Delete (soft): Manager (Staff only), Admin (any user in own company), SuperAdmin (any user).
 [ApiController]
 [Route("api/users")]
@@ -58,6 +58,17 @@ public class UserController : ControllerBase
         var user = await _userService.UpdateUserAsync(userId, request, cancellationToken);
 
         return Ok(user);
+    }
+
+    // Users never reset their own password: an Admin (own company) or SuperAdmin does it for them.
+    [HttpPut("{userId:int}/password")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ResetPassword(int userId, [FromBody] ResetUserPasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        await _userService.ResetPasswordAsync(userId, request, cancellationToken);
+
+        return NoContent();
     }
 
     [HttpDelete("{userId:int}")]

@@ -133,6 +133,27 @@ public class UserService : IUserService
         return ToDto(user);
     }
 
+    // Decided 2026-11-23: only Admin and SuperAdmin (AdminOrAbove on the controller).
+    // An Admin may reset their own password, but never a SuperAdmin's.
+    public async Task ResetPasswordAsync(int userId, ResetUserPasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        var user = await VisibleUsers()
+            .SingleOrDefaultAsync(u => u.Id == userId, cancellationToken)
+            ?? throw new NotFoundException($"User {userId} was not found.");
+
+        // A SuperAdmin has no company, so VisibleUsers already hides them from an Admin.
+        // This is a second guard: resetting a SuperAdmin's password would hand over that account.
+        if (user.Role == UserRole.SuperAdmin && !_currentUser.IsSuperAdmin)
+        {
+            throw new ForbiddenException("Only a SuperAdmin can reset a SuperAdmin's password.");
+        }
+
+        user.PasswordHash = _passwordHasher.HashPassword(user, request.NewPassword);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        // Note: sessions opened with the old password stay valid until their token expires (see open questions).
+    }
+
     public async Task DeleteUserAsync(int userId, CancellationToken cancellationToken)
     {
         var user = await VisibleUsers()

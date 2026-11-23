@@ -9,6 +9,9 @@ public interface IUserService
     Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto request, CancellationToken cancellationToken);
     Task<UserResponseDto> UpdateUserAsync(int userId, UpdateUserRequestDto request, CancellationToken cancellationToken);
 
+    // Admin (own company, including themselves) or SuperAdmin sets a new password. Users never reset their own.
+    Task ResetPasswordAsync(int userId, ResetUserPasswordRequestDto request, CancellationToken cancellationToken);
+
     // Soft delete (IsDeleted/DeletedAt). The user can no longer log in and is hidden from lists.
     Task DeleteUserAsync(int userId, CancellationToken cancellationToken);
 }
