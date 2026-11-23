@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { NavLink } from 'react-router'
-import { LayoutDashboard, ListChecks, Scale, Store, Users, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard, ListChecks, Scale, Store, Users, X, type LucideIcon } from 'lucide-react'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/auth/useAuth'
@@ -36,7 +37,61 @@ const sections: NavSection[] = [
   },
 ]
 
-export function Sidebar() {
+/**
+ * Large screens: a fixed column on the left.
+ * Small screens: hidden; slides in from the left when `mobileOpen` (opened from the top bar's menu button).
+ */
+export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose: () => void }) {
+  // While the mobile menu is open: Escape closes it and the page behind doesn't scroll.
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    document.addEventListener('keydown', onKey)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [mobileOpen, onClose])
+
+  return (
+    <>
+      {/* Desktop */}
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-navy-900 px-4 py-6 lg:flex">
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile drawer */}
+      <div className={cn('fixed inset-0 z-40 lg:hidden', !mobileOpen && 'pointer-events-none')} aria-hidden={!mobileOpen}>
+        <div
+          className={cn('absolute inset-0 bg-navy-950/50 transition-opacity', mobileOpen ? 'opacity-100' : 'opacity-0')}
+          onClick={onClose}
+        />
+        <aside
+          id="mobile-menu"
+          className={cn(
+            'absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-navy-900 px-4 py-6 shadow-xl transition-transform',
+            mobileOpen ? 'translate-x-0' : '-translate-x-full',
+          )}
+          inert={!mobileOpen}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close menu"
+            className="absolute top-5 right-3 rounded-md p-1.5 text-white/70 hover:bg-navy-800 hover:text-white"
+          >
+            <X className="size-5" aria-hidden />
+          </button>
+          <SidebarContent />
+        </aside>
+      </div>
+    </>
+  )
+}
+
+function SidebarContent() {
   const { user } = useAuth()
 
   const visibleSections = sections
@@ -44,7 +99,7 @@ export function Sidebar() {
     .filter((s) => s.items.length > 0)
 
   return (
-    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col bg-navy-900 px-4 py-6">
+    <>
       <div className="px-2">
         <Logo />
       </div>
@@ -100,6 +155,6 @@ export function Sidebar() {
           </div>
         </div>
       )}
-    </aside>
+    </>
   )
 }

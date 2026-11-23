@@ -66,7 +66,7 @@ function IncidentDetail({ incident }: { incident: Incident }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold">{incidentRef(incident.incidentId)}</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">{incidentRef(incident.incidentId)}</h1>
             <StatusBadge status={incident.status} />
           </div>
           <p className="mt-2 text-muted">
@@ -97,6 +97,11 @@ function IncidentDetail({ incident }: { incident: Incident }) {
         </Banner>
       )}
 
+      {/* Phones/tablets: actions right under the header instead of below all the details. */}
+      <div className="mb-6 lg:hidden">
+        <IncidentActions incident={incident} perms={perms} />
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <DetailsCard incident={incident} />
@@ -104,7 +109,9 @@ function IncidentDetail({ incident }: { incident: Incident }) {
           <ActivityCard incident={incident} />
         </div>
         <div className="space-y-6">
-          <IncidentActions incident={incident} perms={perms} />
+          <div className="hidden lg:block">
+            <IncidentActions incident={incident} perms={perms} />
+          </div>
           <Card>
             <CardHeader title="Process status" />
             <div className="px-6 pb-6">

@@ -22,21 +22,22 @@ export function Modal({ title, onClose, locked, children, footer }: Props) {
   }, [onClose, locked])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <div className="absolute inset-0 bg-navy-950/50" onClick={() => !locked && onClose()} aria-hidden />
+      {/* Never taller than the screen: the title and buttons stay put and the middle scrolls. */}
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className="relative w-full max-w-lg rounded-xl bg-white shadow-xl outline-none"
+        className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg flex-col rounded-xl bg-white shadow-xl outline-none sm:max-h-[calc(100dvh-2rem)]"
       >
-        <h2 id="modal-title" className="px-6 pt-6 text-lg font-semibold">
+        <h2 id="modal-title" className="shrink-0 px-5 pt-5 text-lg font-semibold sm:px-6 sm:pt-6">
           {title}
         </h2>
-        <div className="px-6 pt-3 pb-6">{children}</div>
-        {footer && <div className="flex flex-wrap justify-end gap-3 border-t border-line px-6 py-4">{footer}</div>}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">{children}</div>
+        {footer && <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-line px-5 py-4 sm:px-6">{footer}</div>}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Loader2, MapPin, Plus, Trash2 } from 'lucide-react'
 import { ActionDialog } from '@/components/ui/ActionDialog'
@@ -24,6 +24,15 @@ type Props = {
 /** Right-hand panel: one store's details and its locations. */
 export function StoreLocationsPanel({ store, companyName, onStoreDeleted }: Props) {
   const queryClient = useQueryClient()
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  // On small screens this panel sits below the store list: bring it into view when a store is picked.
+  // (The page gives this component a new key per store, so this runs once per selection.)
+  useEffect(() => {
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [])
   const locations = useLocations(store.storeId)
 
   const [newName, setNewName] = useState('')
@@ -58,6 +67,8 @@ export function StoreLocationsPanel({ store, companyName, onStoreDeleted }: Prop
   const sorted = [...(locations.data ?? [])].sort((a, b) => a.name.localeCompare(b.name))
 
   return (
+    // scroll-mt: leaves room for the sticky top bar when scrolled into view.
+    <div ref={panelRef} className="scroll-mt-20">
     <Card>
       {/* Store header */}
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line px-6 py-5">
@@ -165,5 +176,6 @@ export function StoreLocationsPanel({ store, companyName, onStoreDeleted }: Prop
         />
       )}
     </Card>
+    </div>
   )
 }
