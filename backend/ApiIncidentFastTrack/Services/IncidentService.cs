@@ -328,6 +328,12 @@ public class IncidentService : IIncidentService
         var next = requiresPayment ? IncidentStatus.AwaitingPayment : IncidentStatus.AwaitingResolution;
 
         ChangeStatus(incident, next, Guid.NewGuid());
+
+        // Decided 2026-11-23: dedicated fields so lists and reports can filter on them.
+        // The status change is still recorded in IncidentHistory by ChangeStatus.
+        incident.ApprovedAt = _timeProvider.GetUtcNow().UtcDateTime;
+        incident.ApprovedByUserId = _currentUser.UserId;
+
         await _db.SaveChangesAsync(cancellationToken);
 
         return await GetIncidentByIdAsync(incident.Id, cancellationToken);
@@ -749,6 +755,8 @@ public class IncidentService : IIncidentService
         CreatedByUserId = i.CreatedByUserId,
         CreatedAt = i.CreatedAt,
         UpdatedAt = i.ModifiedAt,
+        ApprovedByUserId = i.ApprovedByUserId,
+        ApprovedAt = i.ApprovedAt,
         ClosedByUserId = i.ClosedByUserId,
         ClosedAt = i.ClosedAt
     };

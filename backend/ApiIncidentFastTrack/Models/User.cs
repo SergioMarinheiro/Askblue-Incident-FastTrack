@@ -25,6 +25,7 @@ public class User : BaseDomainModel, ISoftDeletable
 
     public ICollection<Incident> CreatedIncidents { get; set; } = new List<Incident>();
     public ICollection<Incident> ClosedIncidents { get; set; } = new List<Incident>();
+    public ICollection<Incident> ApprovedIncidents { get; set; } = new List<Incident>();
 
     public ICollection<IncidentComment> Comments { get; set; } = new List<IncidentComment>();
     public ICollection<IncidentAttachment> Attachments { get; set; } = new List<IncidentAttachment>();

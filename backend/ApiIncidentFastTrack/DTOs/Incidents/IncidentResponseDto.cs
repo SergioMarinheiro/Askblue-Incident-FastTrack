@@ -38,6 +38,8 @@ public class IncidentResponseDto
     public int CreatedByUserId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public int? ApprovedByUserId { get; set; }
+    public DateTime? ApprovedAt { get; set; }
     public int? ClosedByUserId { get; set; }
     public DateTime? ClosedAt { get; set; }
 }

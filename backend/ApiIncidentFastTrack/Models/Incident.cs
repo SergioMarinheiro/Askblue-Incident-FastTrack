@@ -8,6 +8,7 @@ public class Incident : BaseDomainModel
     public int CompanyId { get; set; }
     public int CreatedByUserId { get; set; }
     public int? ClosedByUserId { get; set; }
+    public int? ApprovedByUserId { get; set; }
     public int? StoreId { get; set; }
     public int? LocationId { get; set; }
     public int? ResolutionTypeId { get; set; }
@@ -25,6 +26,10 @@ public class Incident : BaseDomainModel
     public DateTime? IncidentDate { get; set; }
     public DateTime? ClosedAt { get; set; }
 
+    // Set once, when a Manager/Admin approves (AwaitingApproval -> AwaitingPayment/AwaitingResolution).
+    // Approval is never undone, and no edit (not even Admin's PUT) changes these.
+    public DateTime? ApprovedAt { get; set; }
+
     // Set only when a Manager/Admin rejects the incident (required at that moment, enforced in the service)
     public string? RejectionReason { get; set; }
 
@@ -41,6 +46,7 @@ public class Incident : BaseDomainModel
     public Company Company { get; set; } = null!;
     public User CreatedByUser { get; set; } = null!;
     public User? ClosedByUser { get; set; }
+    public User? ApprovedByUser { get; set; }
     public Store? Store { get; set; }
     public Location? Location { get; set; }
     public ResolutionType? ResolutionType { get; set; }
