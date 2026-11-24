@@ -103,7 +103,6 @@ export function NewStoreModal({ onClose, onCreated }: { onClose: () => void; onC
         <FormField id="storeAddress" label="Address" error={errors.address} hint="Optional.">
           <input id="storeAddress" value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy} className={controlClass(inputClass, errors.address)} />
         </FormField>
-        <p className="text-xs text-muted">Names can't be changed later; a store can only be deleted and created again.</p>
       </form>
     </Modal>
   )

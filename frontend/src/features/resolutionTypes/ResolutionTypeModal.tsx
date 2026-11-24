@@ -123,14 +123,12 @@ export function ResolutionTypeModal({
               onSelect={() => setRequiresPayment(true)}
               disabled={busy}
               title="Awaiting payment"
-              description="Money is paid out, e.g. compensation to the customer."
             />
             <PaymentOption
               checked={!requiresPayment}
               onSelect={() => setRequiresPayment(false)}
               disabled={busy}
               title="Awaiting resolution"
-              description="Handled another way, e.g. HR, Legal or Insurance."
             />
           </div>
         </fieldset>
@@ -150,27 +148,22 @@ function PaymentOption({
   onSelect,
   disabled,
   title,
-  description,
 }: {
   checked: boolean
   onSelect: () => void
   disabled: boolean
   title: string
-  description: string
 }) {
   return (
     <label
       className={cn(
-        'flex cursor-pointer gap-3 rounded-lg border px-3 py-3 transition-colors',
+        'flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-3 transition-colors',
         checked ? 'border-brand-600 bg-brand-50' : 'border-line hover:bg-surface',
         disabled && 'cursor-not-allowed opacity-70',
       )}
     >
-      <input type="radio" name="requiresPayment" checked={checked} onChange={onSelect} disabled={disabled} className="mt-0.5 accent-brand-600" />
-      <span>
-        <span className="block text-sm font-semibold">{title}</span>
-        <span className="block text-xs text-muted">{description}</span>
-      </span>
+      <input type="radio" name="requiresPayment" checked={checked} onChange={onSelect} disabled={disabled} className="accent-brand-600" />
+      <span className="text-sm font-semibold">{title}</span>
     </label>
   )
 }
