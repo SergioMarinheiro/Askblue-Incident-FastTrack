@@ -72,7 +72,6 @@ export function StoresPage() {
     <>
       <PageHeader
         title="Stores"
-        subtitle="Stores and the locations inside them, used when reporting an incident."
         actions={
           <button type="button" onClick={() => setCreating(true)} className={buttonPrimaryClass}>
             <Plus className="size-4" aria-hidden />

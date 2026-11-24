@@ -19,6 +19,8 @@ export type IncidentPermissions = {
   deleteDraft: boolean
   changeFiles: boolean
   approve: boolean
+  /** Show the Approve button, enabled or not (a reviewer looking at an incident awaiting approval). */
+  showApprove: boolean
   /** Why approve is not possible right now, if a reviewer would otherwise expect it. */
   approveBlockedReason: string | null
   reject: boolean
@@ -47,8 +49,7 @@ export function incidentPermissions(user: CurrentUser | null, incident: Incident
 
   const canApproveBase = isReviewer && awaitingApproval
   let approveBlockedReason: string | null = null
-  if (canApproveBase && isCreator) approveBlockedReason = "You can't approve an incident you created."
-  else if (canApproveBase && incident.hasPendingDuplicateFlag) approveBlockedReason = 'Review the possible duplicates first.'
+  if (canApproveBase && !isCreator && incident.hasPendingDuplicateFlag) approveBlockedReason = 'Review the possible duplicates first.'
 
   return {
     isCreator,
@@ -56,7 +57,9 @@ export function incidentPermissions(user: CurrentUser | null, incident: Incident
     submit: isCreator && (status === S.New || status === S.SentBack),
     deleteDraft: isCreator && status === S.New,
     changeFiles: FILES_MAY_CHANGE.includes(status),
-    approve: canApproveBase && approveBlockedReason === null,
+    // The creator sees the button disabled, without a message.
+    approve: canApproveBase && !isCreator && approveBlockedReason === null,
+    showApprove: canApproveBase,
     approveBlockedReason,
     reject: isReviewer && awaitingApproval,
     sendBack: isReviewer && awaitingApproval,

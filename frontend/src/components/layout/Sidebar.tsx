@@ -1,17 +1,15 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
-import { Building2, LayoutDashboard, ListChecks, Scale, Store, Users, X, type LucideIcon } from 'lucide-react'
+import { X } from 'lucide-react'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/auth/useAuth'
-import { ADMIN_OR_ABOVE, hasRole, ROLE_LABELS, SUPERADMIN_ONLY, type Role } from '@/auth/roles'
+import { ADMIN_OR_ABOVE, hasRole, SUPERADMIN_ONLY, type Role } from '@/auth/roles'
 import { Logo } from './Logo'
-import { Avatar } from './Avatar'
 
 type NavItem = {
   to: string
   label: string
-  icon: LucideIcon
   end?: boolean
   /** Roles that see this item. Leave out for "everyone". */
   roles?: readonly Role[]
@@ -23,17 +21,17 @@ const sections: NavSection[] = [
   {
     title: 'Workspace',
     items: [
-      { to: '/overview', label: 'Overview', icon: LayoutDashboard },
-      { to: '/incidents', label: 'Incidents', icon: ListChecks, end: true },
+      { to: '/overview', label: 'Overview' },
+      { to: '/incidents', label: 'Incidents', end: true },
     ],
   },
   {
     title: 'Administration',
     items: [
-      { to: '/users', label: 'Users', icon: Users, roles: USER_LIST_ROLES },
-      { to: '/stores', label: 'Stores', icon: Store, roles: ADMIN_OR_ABOVE },
-      { to: '/resolution-types', label: 'Resolution types', icon: Scale, roles: ADMIN_OR_ABOVE },
-      { to: '/companies', label: 'Companies', icon: Building2, roles: SUPERADMIN_ONLY },
+      { to: '/users', label: 'Users', roles: USER_LIST_ROLES },
+      { to: '/stores', label: 'Stores', roles: ADMIN_OR_ABOVE },
+      { to: '/resolution-types', label: 'Resolution types', roles: ADMIN_OR_ABOVE },
+      { to: '/companies', label: 'Companies', roles: SUPERADMIN_ONLY },
     ],
   },
 ]
@@ -123,7 +121,7 @@ function SidebarContent() {
           <div key={section.title}>
             <p className="px-3 text-xs font-semibold tracking-wider text-white/50 uppercase">{section.title}</p>
             <ul className="mt-3 space-y-1">
-              {section.items.map(({ to, label, icon: Icon, end }) => (
+              {section.items.map(({ to, label, end }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -137,7 +135,6 @@ function SidebarContent() {
                       )
                     }
                   >
-                    <Icon className="size-4" aria-hidden />
                     {label}
                   </NavLink>
                 </li>
@@ -146,16 +143,6 @@ function SidebarContent() {
           </div>
         ))}
       </nav>
-
-      {user && (
-        <div className="flex items-center gap-3 border-t border-white/10 px-2 pt-5">
-          <Avatar name={user.name} />
-          <div className="min-w-0 leading-tight">
-            <div className="truncate text-sm font-semibold text-white">{user.name}</div>
-            <div className="truncate text-xs text-white/60">{ROLE_LABELS[user.role]}</div>
-          </div>
-        </div>
-      )}
     </>
   )
 }

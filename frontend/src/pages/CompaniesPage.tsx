@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertCircle, Building2, CheckCircle2, Loader2, Plus, Search, Trash2, X } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Loader2, Plus, Search, Trash2, X } from 'lucide-react'
 import { ActionDialog } from '@/components/ui/ActionDialog'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { controlClass, FormField } from '@/components/ui/FormField'
@@ -60,7 +60,6 @@ export function CompaniesPage() {
     <>
       <PageHeader
         title="Companies"
-        subtitle="The client companies using Incident FastTrack. Only SuperAdmins see this page."
         actions={
           <button type="button" onClick={() => setCreating(true)} className={buttonPrimaryClass}>
             <Plus className="size-4" aria-hidden />
@@ -108,9 +107,6 @@ export function CompaniesPage() {
               const hasData = n.users + n.stores + n.resolutionTypes + n.incidents > 0
               return (
                 <li key={c.companyId} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-6 py-4">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600" aria-hidden>
-                    <Building2 className="size-4" />
-                  </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{c.name}</p>
                     <p className="text-xs text-muted">

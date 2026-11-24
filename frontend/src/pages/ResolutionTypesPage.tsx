@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, Info, Pencil, Plus, X } from 'lucide-react'
+import { CheckCircle2, Pencil, Plus, X } from 'lucide-react'
 import { useAuth } from '@/auth/useAuth'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -47,7 +47,6 @@ export function ResolutionTypesPage() {
     <>
       <PageHeader
         title="Resolution types"
-        subtitle="How an approved incident is resolved. Chosen when reporting an incident."
         actions={
           <button type="button" onClick={() => setDialog({ kind: 'create' })} className={buttonPrimaryClass}>
             <Plus className="size-4" aria-hidden />
@@ -55,15 +54,6 @@ export function ResolutionTypesPage() {
           </button>
         }
       />
-
-      <div className="mb-5 flex items-start gap-3 rounded-xl border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-ink">
-        <Info className="mt-0.5 size-4 shrink-0 text-brand-600" aria-hidden />
-        <p>
-          When a manager approves an incident, its resolution type decides the next step: types that{' '}
-          <strong>require payment</strong> go to <strong>Awaiting payment</strong>, all others to <strong>Awaiting resolution</strong>.
-          Resolution types can be renamed but not deleted.
-        </p>
-      </div>
 
       {notice && (
         <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">

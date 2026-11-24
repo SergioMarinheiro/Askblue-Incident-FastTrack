@@ -46,16 +46,13 @@ export function ResetPasswordModal({ user, onClose, onDone }: { user: User; onCl
       }
     >
       <form id="reset-form" noValidate onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-sm text-muted">
-          The user signs in with this password from now on. Sessions already open stay valid until they expire.
-        </p>
         {error && (
           <div role="alert" className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
             <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
             <span>{error}</span>
           </div>
         )}
-        <FormField id="newPassword" label="New password" required hint="Share it with the user securely.">
+        <FormField id="newPassword" label="New password" required>
           <PasswordInput id="newPassword" value={password} onChange={setPassword} disabled={busy} />
         </FormField>
       </form>

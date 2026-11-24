@@ -120,7 +120,7 @@ export function UserFormModal({ user, onClose, onSaved }: { user?: User; onClose
         <FormField id="lastName" label="Last name" required error={errors.lastName}>
           <input id="lastName" value={values.lastName} onChange={(e) => set('lastName', e.target.value)} disabled={busy} className={controlClass(inputClass, errors.lastName)} />
         </FormField>
-        <FormField id="email" label="Email" required error={errors.email} hint="Used to sign in." className="sm:col-span-2">
+        <FormField id="email" label="Email" required error={errors.email} className="sm:col-span-2">
           <input id="email" type="email" autoComplete="off" value={values.email} onChange={(e) => set('email', e.target.value)} disabled={busy} className={controlClass(inputClass, errors.email)} />
         </FormField>
 
@@ -129,7 +129,7 @@ export function UserFormModal({ user, onClose, onSaved }: { user?: User; onClose
           label="Role"
           required
           error={errors.role}
-          hint={roleLocked ? (user?.userId === me?.userId ? "You can't change your own role." : "The SuperAdmin role can't be changed.") : isEdit ? 'A new role applies from the user’s next sign-in.' : undefined}
+          hint={roleLocked ? (user?.userId === me?.userId ? "You can't change your own role." : "The SuperAdmin role can't be changed.") : undefined}
           className={needsCompany ? undefined : 'sm:col-span-2'}
         >
           <select id="role" value={values.role} onChange={(e) => set('role', e.target.value as Role)} disabled={busy || roleLocked} className={controlClass(inputClass, errors.role)}>
@@ -156,7 +156,7 @@ export function UserFormModal({ user, onClose, onSaved }: { user?: User; onClose
         )}
 
         {!isEdit && (
-          <FormField id="password" label="Initial password" required error={errors.password} hint="Share it with the user securely." className="sm:col-span-2">
+          <FormField id="password" label="Password" required error={errors.password} className="sm:col-span-2">
             <PasswordInput id="password" value={values.password} onChange={(v) => set('password', v)} disabled={busy} error={errors.password} />
           </FormField>
         )}

@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { ArrowRight } from 'lucide-react'
 import { useAuth } from '@/auth/useAuth'
-import { hasRole } from '@/auth/roles'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
@@ -18,17 +17,16 @@ function greeting(now = new Date()) {
   return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'
 }
 
-const STAT_CARDS: { status: IncidentStatus; label: string; hint: string; accent: string }[] = [
-  { status: IncidentStatus.AwaitingApproval, label: 'Awaiting approval', hint: 'Submitted, waiting for a manager', accent: 'bg-amber-400' },
-  { status: IncidentStatus.AwaitingPayment, label: 'Awaiting payment', hint: 'Approved, payment pending', accent: 'bg-violet-500' },
-  { status: IncidentStatus.AwaitingResolution, label: 'Awaiting resolution', hint: 'Approved, being resolved', accent: 'bg-brand-600' },
-  { status: IncidentStatus.Completed, label: 'Completed', hint: 'Resolved and closed', accent: 'bg-emerald-500' },
+const STAT_CARDS: { status: IncidentStatus; label: string; accent: string }[] = [
+  { status: IncidentStatus.AwaitingApproval, label: 'Awaiting approval', accent: 'bg-amber-400' },
+  { status: IncidentStatus.AwaitingPayment, label: 'Awaiting payment', accent: 'bg-violet-500' },
+  { status: IncidentStatus.AwaitingResolution, label: 'Awaiting resolution', accent: 'bg-brand-600' },
+  { status: IncidentStatus.Completed, label: 'Completed', accent: 'bg-emerald-500' },
 ]
 
 export function OverviewPage() {
   const { user } = useAuth()
   const { data, isPending, isError, error, refetch } = useIncidents()
-  const isReviewer = hasRole(user?.role, ['Manager', 'Admin', 'SuperAdmin'])
   const firstName = user?.name.split(' ')[0] ?? ''
 
   const counts = useMemo(() => {
@@ -41,7 +39,6 @@ export function OverviewPage() {
     <>
       <PageHeader
         title={`${greeting()}${firstName ? `, ${firstName}` : ''}!`}
-        subtitle={isReviewer ? "Here is a summary of your organisation's incidents." : 'Here is a summary of your incidents.'}
       />
 
       {/* Counts per status */}
@@ -57,7 +54,6 @@ export function OverviewPage() {
             <p className="mt-2 text-3xl font-bold tabular-nums">
               {isPending ? <span className="text-muted/50">–</span> : counts.get(c.status) ?? 0}
             </p>
-            <p className="mt-1 text-xs text-muted">{c.hint}</p>
           </Link>
         ))}
       </div>

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertCircle, Ban, Check, CheckCheck, CopyX, Loader2, Pencil, Send, Trash2, Undo2, X } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { ActionDialog } from '@/components/ui/ActionDialog'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { cn } from '@/lib/cn'
@@ -150,11 +150,11 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
   if (perms.submit)
     buttons.push(
       <button key="submit" type="button" onClick={handleSubmit} disabled={submitting} className={cn(actionButton, tones.primary)}>
-        {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Send className="size-4" aria-hidden />}
+        {submitting && <Loader2 className="size-4 animate-spin" aria-hidden />}
         Submit for approval
       </button>,
     )
-  if (perms.approve || perms.approveBlockedReason)
+  if (perms.showApprove)
     buttons.push(
       <div key="approve">
         <button
@@ -163,7 +163,6 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
           disabled={!perms.approve}
           className={cn(actionButton, tones.primary)}
         >
-          <Check className="size-4" aria-hidden />
           Approve
         </button>
         {perms.approveBlockedReason && <p className="mt-1 text-xs text-muted">{perms.approveBlockedReason}</p>}
@@ -172,11 +171,9 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
   if (perms.reviewDuplicates) {
     buttons.push(
       <button key="dismiss" type="button" onClick={() => setDialog('dismiss')} className={cn(actionButton, tones.neutral)}>
-        <CheckCheck className="size-4" aria-hidden />
         Not a duplicate
       </button>,
       <button key="confirmDup" type="button" onClick={() => setDialog('confirmDuplicate')} className={cn(actionButton, tones.danger)}>
-        <CopyX className="size-4" aria-hidden />
         Close as duplicate
       </button>,
     )
@@ -184,42 +181,36 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
   if (perms.sendBack)
     buttons.push(
       <button key="sendBack" type="button" onClick={() => setDialog('sendBack')} className={cn(actionButton, tones.neutral)}>
-        <Undo2 className="size-4" aria-hidden />
         Send back for changes
       </button>,
     )
   if (perms.complete)
     buttons.push(
       <button key="complete" type="button" onClick={() => setDialog('complete')} className={cn(actionButton, tones.primary)}>
-        <CheckCheck className="size-4" aria-hidden />
         Mark as completed
       </button>,
     )
   if (perms.edit)
     buttons.push(
       <Link key="edit" to={`/incidents/${id}/edit`} className={cn(actionButton, tones.neutral)}>
-        <Pencil className="size-4" aria-hidden />
         Edit details
       </Link>,
     )
   if (perms.reject)
     buttons.push(
       <button key="reject" type="button" onClick={() => setDialog('reject')} className={cn(actionButton, tones.danger)}>
-        <X className="size-4" aria-hidden />
         Reject
       </button>,
     )
   if (perms.deleteDraft)
     buttons.push(
       <button key="delete" type="button" onClick={() => setConfirmDelete(true)} className={cn(actionButton, tones.danger)}>
-        <Trash2 className="size-4" aria-hidden />
         Delete draft
       </button>,
     )
   if (perms.cancel)
     buttons.push(
       <button key="cancel" type="button" onClick={() => setDialog('cancel')} className={cn(actionButton, tones.danger)}>
-        <Ban className="size-4" aria-hidden />
         Cancel incident
       </button>,
     )

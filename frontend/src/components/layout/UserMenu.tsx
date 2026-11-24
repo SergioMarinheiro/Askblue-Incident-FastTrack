@@ -38,24 +38,25 @@ export function UserMenu() {
   if (!user) return null
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative flex items-center gap-3">
+      {/* Name and role next to the avatar; hidden on phones, where the top bar is narrow. */}
+      <div className="hidden min-w-0 text-right leading-tight sm:block">
+        <div className="truncate text-sm font-semibold">{user.name}</div>
+        <div className="truncate text-xs text-muted">{ROLE_LABELS[user.role]}</div>
+      </div>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Open user menu"
-        className="rounded-full focus:ring-2 focus:ring-brand-100 focus:outline-none"
+        className="group cursor-pointer rounded-full focus:ring-2 focus:ring-brand-100 focus:outline-none"
       >
         <Avatar name={user.name} variant="light" />
       </button>
 
       {open && (
-        <div role="menu" className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-white shadow-lg">
-          <div className="border-b border-line px-4 py-3">
-            <div className="truncate text-sm font-semibold">{user.name}</div>
-            <div className="truncate text-xs text-muted">{ROLE_LABELS[user.role]}</div>
-          </div>
+        <div role="menu" className="absolute top-full right-0 z-20 mt-2 w-max overflow-hidden rounded-xl border border-line bg-white shadow-lg">
           <button
             type="button"
             role="menuitem"

@@ -42,7 +42,6 @@ export function LoginPage() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md rounded-xl border border-line bg-white p-8 shadow-sm">
           <h1 className="text-2xl font-bold">Sign in</h1>
-          <p className="mt-1 text-sm text-muted">Sign in to your account to continue.</p>
 
           {error && (
             <div role="alert" className="mt-6 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
@@ -93,8 +92,6 @@ export function LoginPage() {
               {submitting ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
-
-          <p className="mt-6 text-center text-xs text-muted">Forgot your password? Ask an administrator to reset it.</p>
         </div>
       </main>
     </div>

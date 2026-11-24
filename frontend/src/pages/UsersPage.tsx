@@ -66,7 +66,6 @@ export function UsersPage() {
     <>
       <PageHeader
         title="Users"
-        subtitle={isSuperAdmin ? 'Everyone who can sign in, across all companies.' : 'People in your company who can sign in.'}
         actions={
           canCreateUsers(me) && (
             <button type="button" onClick={() => setDialog({ kind: 'create' })} className={buttonPrimaryClass}>

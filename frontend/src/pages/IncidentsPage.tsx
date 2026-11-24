@@ -60,7 +60,6 @@ export function IncidentsPage() {
     <>
       <PageHeader
         title="Incidents"
-        subtitle="Browse and follow up on submitted incidents."
       />
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">
