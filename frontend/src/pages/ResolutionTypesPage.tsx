@@ -87,7 +87,7 @@ export function ResolutionTypesPage() {
       )}
 
       <Card>
-        <CardHeader title="All resolution types" actions={data && `${rows.length}`} />
+        <CardHeader title={data ? `${rows.length} ${rows.length === 1 ? 'resolution type' : 'resolution types'}` : 'Resolution types'} />
         {isPending ? (
           <LoadingState label="Loading resolution types…" />
         ) : isError ? (

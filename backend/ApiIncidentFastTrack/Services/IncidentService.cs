@@ -774,6 +774,8 @@ public class IncidentService : IIncidentService
         RejectionReason = i.RejectionReason,
         HasPendingDuplicateFlag = i.DuplicateRelationships.Any(d => d.ReviewStatus == DuplicateReviewStatus.Pending),
         CreatedByUserId = i.CreatedByUserId,
+        // Translated by EF into a JOIN on Users in the same query. Soft-deleted users keep their row, so the name still shows.
+        CreatedByUserName = i.CreatedByUser.FirstName + " " + i.CreatedByUser.LastName,
         CreatedAt = i.CreatedAt,
         UpdatedAt = i.ModifiedAt,
         ApprovedByUserId = i.ApprovedByUserId,

@@ -43,6 +43,8 @@ export type Incident = {
   rejectionReason: string | null
   hasPendingDuplicateFlag: boolean
   createdByUserId: number
+  /** For display ("Reported by"); compare users with createdByUserId. */
+  createdByUserName: string
   /** UTC (use parseUtc) */
   createdAt: string
   updatedAt: string | null

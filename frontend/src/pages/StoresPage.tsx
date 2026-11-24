@@ -173,7 +173,7 @@ export function StoresPage() {
           />
         ) : (
           <Card>
-            <EmptyState title="Select a store" description="Choose a store on the left to see and manage its locations." />
+            <EmptyState title="Select a store"/>
           </Card>
         )}
       </div>

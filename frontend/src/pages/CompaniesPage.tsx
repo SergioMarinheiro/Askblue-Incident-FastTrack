@@ -93,7 +93,7 @@ export function CompaniesPage() {
       </div>
 
       <Card>
-        <CardHeader title="All companies" actions={companies.data && `${rows.length}`} />
+        <CardHeader title={companies.data ? `${rows.length} ${rows.length === 1 ? 'company' : 'companies'}` : 'Companies'} />
         {companies.isPending ? (
           <LoadingState label="Loading companies…" />
         ) : companies.isError ? (
@@ -136,9 +136,6 @@ export function CompaniesPage() {
           </ul>
         )}
       </Card>
-      <p className="mt-3 text-xs text-muted">
-        A company can only be deleted while it has no users, stores, resolution types or incidents (including deleted users and stores).
-      </p>
 
       {creating && (
         <NewCompanyModal

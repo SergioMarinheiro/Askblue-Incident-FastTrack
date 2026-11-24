@@ -109,7 +109,7 @@ export function UsersPage() {
       </div>
 
       <Card>
-        <CardHeader title={roleFilter ? ROLE_LABELS[roleFilter] : 'All users'} actions={data && `${filtered.length} ${filtered.length === 1 ? 'user' : 'users'}`} />
+        <CardHeader title={data ? `${filtered.length} ${filtered.length === 1 ? 'user' : 'users'}` : 'Users'} />
         {isPending ? (
           <LoadingState label="Loading users…" />
         ) : isError ? (
