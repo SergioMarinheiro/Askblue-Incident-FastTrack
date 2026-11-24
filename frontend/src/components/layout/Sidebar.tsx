@@ -5,6 +5,7 @@ import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/auth/useAuth'
 import { ADMIN_OR_ABOVE, hasRole, SUPERADMIN_ONLY, type Role } from '@/auth/roles'
+import askblueLogoWhite from '@/assets/askblue-logo-negativo-rgb.png'
 import { Logo } from './Logo'
 
 type NavItem = {
@@ -57,7 +58,7 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
   return (
     <>
       {/* Desktop */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-navy-900 px-4 py-6 lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-brand-600 px-4 py-6 lg:flex">
         <SidebarContent />
       </aside>
 
@@ -70,7 +71,7 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
         <aside
           id="mobile-menu"
           className={cn(
-            'absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-navy-900 px-4 py-6 shadow-xl transition-transform',
+            'absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-brand-600 px-4 py-6 shadow-xl transition-transform',
             mobileOpen ? 'translate-x-0' : '-translate-x-full',
           )}
           inert={!mobileOpen}
@@ -79,7 +80,7 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="absolute top-5 right-3 rounded-md p-1.5 text-white/70 hover:bg-navy-800 hover:text-white"
+            className="absolute top-5 right-3 rounded-md p-1.5 text-white/70 hover:bg-white/10 hover:text-white"
           >
             <X className="size-5" aria-hidden />
           </button>
@@ -103,13 +104,13 @@ function SidebarContent() {
         <Logo />
       </div>
 
-      {/* The main action, shown as a button so it stands out from the menu. */}
+      {/* The main action, shown as a button so it stands out from the menu: white on the blue sidebar. */}
       <NavLink
         to="/incidents/new"
         className={({ isActive }) =>
           cn(
-            'mt-8 flex w-full items-center justify-center gap-2 self-stretch rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-colors',
-            isActive ? 'bg-brand-700 ring-2 ring-white/30' : 'bg-brand-600 hover:bg-brand-500',
+            'mt-8 flex w-full items-center justify-center gap-2 self-stretch rounded-lg bg-white px-3 py-2.5 text-center text-sm font-semibold text-brand-600 shadow-sm transition-colors',
+            isActive ? 'ring-2 ring-white/50 ring-offset-2 ring-offset-brand-600' : 'hover:bg-brand-50',
           )
         }
       >
@@ -119,7 +120,7 @@ function SidebarContent() {
       <nav className="mt-8 flex-1 space-y-8 overflow-y-auto">
         {visibleSections.map((section) => (
           <div key={section.title}>
-            <p className="px-3 text-xs font-semibold tracking-wider text-white/50 uppercase">{section.title}</p>
+            <p className="px-3 text-xs font-semibold tracking-wider text-white/60 uppercase">{section.title}</p>
             <ul className="mt-3 space-y-1">
               {section.items.map(({ to, label, end }) => (
                 <li key={to}>
@@ -130,8 +131,8 @@ function SidebarContent() {
                       cn(
                         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
                         isActive
-                          ? 'bg-navy-800 font-semibold text-white'
-                          : 'text-white/75 hover:bg-navy-800/60 hover:text-white',
+                          ? 'bg-white/15 font-semibold text-white'
+                          : 'text-white/80 hover:bg-white/10 hover:text-white',
                       )
                     }
                   >
@@ -143,6 +144,9 @@ function SidebarContent() {
           </div>
         ))}
       </nav>
+
+      {/* The menu above takes all free space (flex-1), which pushes the logo to the bottom. */}
+      <img src={askblueLogoWhite} alt="AskBlue" className="mx-auto mt-6 w-40 shrink-0" />
     </>
   )
 }

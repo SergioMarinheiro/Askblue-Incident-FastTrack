@@ -2,13 +2,11 @@ import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { ArrowRight } from 'lucide-react'
 import { useAuth } from '@/auth/useAuth'
-import { Card, CardHeader } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
 import { useIncidents } from '@/features/incidents/api'
 import { IncidentTable } from '@/features/incidents/IncidentTable'
 import { IncidentStatus } from '@/features/incidents/types'
-import { cn } from '@/lib/cn'
 
 const RECENT_COUNT = 5
 
@@ -17,11 +15,11 @@ function greeting(now = new Date()) {
   return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'
 }
 
-const STAT_CARDS: { status: IncidentStatus; label: string; accent: string }[] = [
-  { status: IncidentStatus.AwaitingApproval, label: 'Awaiting approval', accent: 'bg-amber-400' },
-  { status: IncidentStatus.AwaitingPayment, label: 'Awaiting payment', accent: 'bg-violet-500' },
-  { status: IncidentStatus.AwaitingResolution, label: 'Awaiting resolution', accent: 'bg-brand-600' },
-  { status: IncidentStatus.Completed, label: 'Completed', accent: 'bg-emerald-500' },
+const STATS: { status: IncidentStatus; label: string }[] = [
+  { status: IncidentStatus.AwaitingApproval, label: 'Awaiting approval' },
+  { status: IncidentStatus.AwaitingPayment, label: 'Awaiting payment' },
+  { status: IncidentStatus.AwaitingResolution, label: 'Awaiting resolution' },
+  { status: IncidentStatus.Completed, label: 'Completed' },
 ]
 
 export function OverviewPage() {
@@ -41,34 +39,27 @@ export function OverviewPage() {
         title={`${greeting()}${firstName ? `, ${firstName}` : ''}!`}
       />
 
-      {/* Counts per status */}
-      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {STAT_CARDS.map((c) => (
-          <Link
-            key={c.status}
-            to={`/incidents?status=${c.status}`}
-            className="group relative overflow-hidden rounded-xl border border-line bg-white p-5 shadow-sm transition hover:border-brand-100 hover:shadow-md"
-          >
-            <span className={cn('absolute inset-x-0 top-0 h-1', c.accent)} aria-hidden />
-            <p className="text-sm font-semibold text-muted">{c.label}</p>
-            <p className="mt-2 text-3xl font-bold tabular-nums">
-              {isPending ? <span className="text-muted/50">–</span> : counts.get(c.status) ?? 0}
+      {/* Counts per status: one strip with lines between the numbers, no boxes. */}
+      <div className="mb-12 grid grid-cols-2 border-y border-line lg:grid-cols-4 lg:divide-x lg:divide-line">
+        {STATS.map((s) => (
+          <Link key={s.status} to={`/incidents?status=${s.status}`} className="group px-4 py-5 text-center lg:px-6">
+            <p className="text-sm text-muted group-hover:text-ink">{s.label}</p>
+            <p className="mt-1 text-4xl font-semibold tabular-nums">
+              {isPending ? <span className="text-muted/50">–</span> : counts.get(s.status) ?? 0}
             </p>
           </Link>
         ))}
       </div>
 
-      {/* Recent incidents */}
-      <Card>
-        <CardHeader
-          title="Recent incidents"
-          actions={
-            <Link to="/incidents" className="inline-flex items-center gap-1 font-semibold text-brand-600 hover:underline">
-              View all
-              <ArrowRight className="size-4" aria-hidden />
-            </Link>
-          }
-        />
+      {/* Recent incidents: a heading and the table straight on the page. */}
+      <section>
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <h2 className="text-lg font-semibold">Recent incidents</h2>
+          <Link to="/incidents" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:underline">
+            View all
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
+        </div>
         {isPending ? (
           <LoadingState label="Loading incidents…" />
         ) : isError ? (
@@ -85,9 +76,9 @@ export function OverviewPage() {
           />
         ) : (
           // The API returns incidents newest first.
-          <IncidentTable incidents={data.slice(0, RECENT_COUNT)} />
+          <IncidentTable incidents={data.slice(0, RECENT_COUNT)} flush />
         )}
-      </Card>
+      </section>
     </>
   )
 }

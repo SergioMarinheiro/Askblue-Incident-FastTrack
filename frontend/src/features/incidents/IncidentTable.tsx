@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { AlertTriangle, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/cn'
 import { formatDate } from '@/lib/dates'
 import { incidentDisplayDate, incidentPlace, incidentRef, incidentTitle } from './labels'
 import { StatusBadge } from './StatusBadge'
@@ -8,13 +9,15 @@ import type { Incident } from './types'
 /**
  * Incidents (ID, incident, store, date, status). Used by the list and the overview.
  * From "md" up: a table where the ID links to the incident. On phones: a list of tappable rows.
+ * `flush`: the table sits straight on the page instead of inside a card (no side padding,
+ * a line under the header instead of a shaded header row).
  */
-export function IncidentTable({ incidents }: { incidents: Incident[] }) {
+export function IncidentTable({ incidents, flush = false }: { incidents: Incident[]; flush?: boolean }) {
   return (
     <>
       <MobileList incidents={incidents} />
 
-      <div className="hidden px-3 pb-3 md:block">
+      <div className={cn('hidden md:block', !flush && 'px-3 pb-3')}>
         {/* Fixed layout: each column gets its share of the width, so the table always fills the card. */}
         <table className="w-full table-fixed text-left text-sm">
           <colgroup>
@@ -25,7 +28,7 @@ export function IncidentTable({ incidents }: { incidents: Incident[] }) {
             <col className="w-[18%]" />
           </colgroup>
           <thead>
-            <tr className="bg-surface text-xs font-semibold tracking-wide text-muted uppercase">
+            <tr className={cn('text-xs font-semibold tracking-wide text-muted uppercase', flush ? 'border-b border-line' : 'bg-surface')}>
               <th className="rounded-l-lg px-3 py-3">ID</th>
               <th className="px-3 py-3">Incident</th>
               <th className="px-3 py-3">Store</th>
@@ -35,7 +38,7 @@ export function IncidentTable({ incidents }: { incidents: Incident[] }) {
           </thead>
           <tbody className="divide-y divide-line">
             {incidents.map((incident) => (
-              <tr key={incident.incidentId} className="hover:bg-surface/60">
+              <tr key={incident.incidentId} className={flush ? 'hover:bg-white' : 'hover:bg-surface/60'}>
                 <td className="px-3 py-3.5 font-semibold whitespace-nowrap">
                   <Link to={`/incidents/${incident.incidentId}`} className="text-brand-600 hover:underline">
                     {incidentRef(incident.incidentId)}
