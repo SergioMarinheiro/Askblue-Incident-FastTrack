@@ -3,15 +3,15 @@ import { parseUtc, parseWallClock } from '@/lib/dates'
 import { IncidentStatus, type Incident, type IncidentPriority, type IncidentType } from './types'
 
 export const STATUS_INFO: Record<IncidentStatus, { label: string; tone: BadgeTone }> = {
-  [IncidentStatus.New]: { label: 'New', tone: 'gray' },
+  [IncidentStatus.New]: { label: 'New', tone: 'cyan' },
   [IncidentStatus.AwaitingApproval]: { label: 'Awaiting approval', tone: 'amber' },
   [IncidentStatus.AwaitingPayment]: { label: 'Awaiting payment', tone: 'violet' },
   [IncidentStatus.AwaitingResolution]: { label: 'Awaiting resolution', tone: 'blue' },
   [IncidentStatus.Completed]: { label: 'Completed', tone: 'green' },
   [IncidentStatus.Rejected]: { label: 'Rejected', tone: 'red' },
   [IncidentStatus.SentBack]: { label: 'Sent back', tone: 'orange' },
-  [IncidentStatus.Canceled]: { label: 'Canceled', tone: 'gray' },
-  [IncidentStatus.Duplicate]: { label: 'Duplicate', tone: 'gray' },
+  [IncidentStatus.Canceled]: { label: 'Canceled', tone: 'red' },
+  [IncidentStatus.Duplicate]: { label: 'Duplicate', tone: 'red' },
 }
 
 /** Statuses in the order they are shown in filters. */

@@ -3,9 +3,9 @@ import { useSearchParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, KeyRound, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { useAuth } from '@/auth/useAuth'
-import { ROLE_LABELS, ROLES, type Role } from '@/auth/roles'
+import { ROLE_LABELS, ROLE_TONE, ROLES, type Role } from '@/auth/roles'
 import { ActionDialog } from '@/components/ui/ActionDialog'
-import { Badge, type BadgeTone } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/Badge'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
@@ -16,8 +16,6 @@ import { deleteUser, userKeys, useUsers, type User } from '@/features/users/api'
 import { canCreateUsers, userPermissions } from '@/features/users/permissions'
 import { ResetPasswordModal } from '@/features/users/ResetPasswordModal'
 import { UserFormModal } from '@/features/users/UserFormModal'
-
-const ROLE_TONE: Record<Role, BadgeTone> = { SuperAdmin: 'violet', Admin: 'blue', Manager: 'amber', Staff: 'gray' }
 
 type Dialog = { kind: 'create' } | { kind: 'edit'; user: User } | { kind: 'reset'; user: User } | { kind: 'delete'; user: User }
 

@@ -1,3 +1,5 @@
+import type { BadgeTone } from '@/components/ui/Badge'
+
 // Mirrors the backend UserRole enum (sent as text in the login response).
 export const ROLES = ['SuperAdmin', 'Admin', 'Manager', 'Staff'] as const
 export type Role = (typeof ROLES)[number]
@@ -12,6 +14,9 @@ export const ROLE_LABELS: Record<Role, string> = {
   Manager: 'Manager',
   Staff: 'Staff',
 }
+
+/** Badge colour per role (Users page, and the dev colour preview). */
+export const ROLE_TONE: Record<Role, BadgeTone> = { SuperAdmin: 'violet', Admin: 'blue', Manager: 'amber', Staff: 'gray' }
 
 /** Same groups as the backend AuthPolicies. */
 export const MANAGER_OR_ABOVE = ['Manager', 'Admin', 'SuperAdmin'] as const satisfies readonly Role[]
