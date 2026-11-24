@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { useQueries } from '@tanstack/react-query'
 import { ArrowRight, FilePlus2, History, RefreshCw } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
+import { ExpandableText } from '@/components/ui/ExpandableText'
 import { ErrorState, LoadingState } from '@/components/ui/States'
 import { apiFetch } from '@/lib/api'
 import { formatDateTime, parseUtc } from '@/lib/dates'
@@ -145,14 +146,19 @@ function ChangeLine({ change }: { change: FieldChange }) {
 
 function Value({ text, muted }: { text: string | null; muted?: boolean }) {
   if (text === null) return <span className="text-muted italic">empty</span>
-  return <span className={muted ? 'text-muted line-through decoration-muted/40' : 'font-medium'}>{text}</span>
+  return <span className={`min-w-0 wrap-anywhere ${muted ? 'text-muted line-through decoration-muted/40' : 'font-medium'}`}>{text}</span>
 }
 
 function TextBox({ title, text }: { title: string; text: string | null }) {
   return (
-    <div className="rounded-lg bg-surface px-3 py-2">
+    // min-w-0: the box may shrink below its longest word, so ExpandableText can wrap it.
+    <div className="min-w-0 rounded-lg bg-surface px-3 py-2">
       <p className="text-xs font-semibold tracking-wide text-muted uppercase">{title}</p>
-      <p className="mt-1 text-sm whitespace-pre-line">{text ?? <span className="text-muted italic">empty</span>}</p>
+      {text === null ? (
+        <p className="mt-1 text-sm text-muted italic">empty</p>
+      ) : (
+        <ExpandableText text={text} className="mt-1 text-sm" />
+      )}
     </div>
   )
 }

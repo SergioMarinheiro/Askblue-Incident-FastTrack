@@ -5,9 +5,11 @@ import { AlertTriangle, ArrowLeft, Download, FileText, Loader2, MessageSquare, P
 import { useAuth } from '@/auth/useAuth'
 import { ActionDialog } from '@/components/ui/ActionDialog'
 import { Card, CardHeader } from '@/components/ui/Card'
+import { ExpandableText } from '@/components/ui/ExpandableText'
 import { buttonPrimaryClass, buttonSecondaryClass, inputClass } from '@/components/ui/form'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States'
 import { ApiError } from '@/lib/api'
+import { cn } from '@/lib/cn'
 import { formatDateTime, parseUtc, parseWallClock } from '@/lib/dates'
 import {
   addComment,
@@ -136,6 +138,7 @@ function DetailsCard({ incident }: { incident: Incident }) {
       <CardHeader title="Incident details" />
       <div className="px-6 pb-6">
         <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+          <Field label="Reported by">{incident.createdByUserName}</Field>
           <Field label="Type">{incident.incidentType ? TYPE_LABELS[incident.incidentType] : null}</Field>
           <Field label="Store">{incidentPlace(incident)}</Field>
           <Field label="Date and time">
@@ -159,14 +162,9 @@ function DetailsCard({ incident }: { incident: Incident }) {
 
         <div className="mt-7 border-t border-line pt-5">
           <Field label="Description" wide>
-            {incident.description ? <p className="whitespace-pre-line">{incident.description}</p> : null}
+            {incident.description ? <ExpandableText text={incident.description} /> : null}
           </Field>
         </div>
-
-        <p className="mt-6 text-xs text-muted">
-          Recorded {formatDateTime(parseUtc(incident.createdAt))}
-          {incident.updatedAt && <> · Last updated {formatDateTime(parseUtc(incident.updatedAt))}</>}
-        </p>
       </div>
     </Card>
   )
@@ -408,9 +406,11 @@ function AttachmentRow({ attachment, onDelete }: { attachment: Attachment; onDel
 
 function Field({ label, children, wide }: { label: string; children: ReactNode; wide?: boolean }) {
   return (
-    <div className={wide ? 'sm:col-span-2' : undefined}>
+    // min-w-0 + wrap-anywhere: a long word with no spaces (e.g. a pasted link) breaks onto the next line
+    // instead of stretching the grid column and running out of the card.
+    <div className={cn('min-w-0', wide && 'sm:col-span-2')}>
       <dt className="text-xs font-semibold tracking-wide text-muted uppercase">{label}</dt>
-      <dd className="mt-1 text-sm">{children ?? <span className="text-muted">—</span>}</dd>
+      <dd className="mt-1 text-sm wrap-anywhere">{children ?? <span className="text-muted">—</span>}</dd>
     </div>
   )
 }
