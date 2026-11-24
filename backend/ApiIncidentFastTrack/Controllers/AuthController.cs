@@ -42,26 +42,6 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    // Password reset is not decided yet (open question E2): how the email is sent.
-    // The routes stay so the contract is visible, but return 501 until then.
-
-    // POST /api/auth/forgot-password
-    [HttpPost("forgot-password")]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
-    public IActionResult ForgotPassword([FromBody] ForgotPasswordRequestDto request)
-    {
-        return Problem(
-            statusCode: StatusCodes.Status501NotImplemented,
-            title: "Password reset is not available yet.");
-    }
-
-    // POST /api/auth/reset-password
-    [HttpPost("reset-password")]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status501NotImplemented)]
-    public IActionResult ResetPassword([FromBody] ResetPasswordRequestDto request)
-    {
-        return Problem(
-            statusCode: StatusCodes.Status501NotImplemented,
-            title: "Password reset is not available yet.");
-    }
+    // No self-service password reset (decided 2026-11-23): an Admin or SuperAdmin sets a new
+    // password through PUT /api/users/{userId}/password.
 }

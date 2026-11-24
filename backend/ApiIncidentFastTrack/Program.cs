@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -20,7 +21,14 @@ var connectionString = builder.Configuration.GetConnectionString("IncidentFastTr
     ?? throw new InvalidOperationException(
         "Connection string 'IncidentFastTrack' is not configured. Set it with 'dotnet user-secrets set'.");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options => options
+    .UseSqlServer(connectionString)
+    // EF warns (10622) that Incident and Store have the tenant filter but their children
+    // (comments, attachments, history, duplicates, locations) don't. That is by design
+    // (CLAUDE.md, "Tenant filtering is mixed"): services always load the parent through its
+    // filter first. The rule this warning stands for still applies: never query a child table
+    // without checking its parent incident or store first, or another company's rows leak.
+    .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.PossibleIncorrectRequiredNavigationWithQueryFilterInteractionWarning)));
 
 // JWT settings: Issuer/Audience/ExpiryMinutes from appsettings.json, SigningKey from user secrets.
 // Fail at startup, not at the first login, if the key is missing or too short.
@@ -69,27 +77,36 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AuthPolicies.ManagerOrAbove, policy =>
         policy.RequireRole(nameof(UserRole.Manager), nameof(UserRole.Admin), nameof(UserRole.SuperAdmin)))
     .AddPolicy(AuthPolicies.AdminOrAbove, policy =>
-        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.SuperAdmin)));
+        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.SuperAdmin)))
+    .AddPolicy(AuthPolicies.SuperAdminOnly, policy =>
+        policy.RequireRole(nameof(UserRole.SuperAdmin)));
 
 // The caller of the current request, read from the JWT claims (used by services and the tenant filter).
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<ICompanyResolver, CompanyResolver>();
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IIncidentCommentService, IncidentCommentService>();
+builder.Services.AddScoped<IIncidentAttachmentService, IncidentAttachmentService>();
+
+// Attachment files: a folder on disk for now (decided 2026-11-23). A relative RootPath is
+// resolved against the content root, so it doesn't depend on the folder the API is started from.
+var attachmentOptions = builder.Configuration.GetSection(AttachmentStorageOptions.SectionName).Get<AttachmentStorageOptions>()
+    ?? new AttachmentStorageOptions();
+var attachmentRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, attachmentOptions.RootPath));
+builder.Services.AddSingleton<IFileStorage>(new LocalFileStorage(attachmentRoot));
 builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<IResolutionTypeService, ResolutionTypeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+builder.Services.AddControllers();
 
 // Errors as ProblemDetails (RFC 9457): exceptions thrown by services (GlobalExceptionHandler)
 // and empty-body status codes such as 401/403 from authorization (UseStatusCodePages below).

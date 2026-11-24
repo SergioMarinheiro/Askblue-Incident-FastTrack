@@ -80,6 +80,21 @@ public class RequestValidationTests
     }
 
     [Fact]
+    public void ResetPassword_WithPassword_IsValid()
+    {
+        Assert.Empty(InvalidMembers(new ResetUserPasswordRequestDto { NewPassword = "new-secret" }));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ResetPassword_WithBlankPassword_IsInvalid(string newPassword)
+    {
+        Assert.Contains(nameof(ResetUserPasswordRequestDto.NewPassword),
+            InvalidMembers(new ResetUserPasswordRequestDto { NewPassword = newPassword }));
+    }
+
+    [Fact]
     public void User_WithInvalidEmail_IsInvalid()
     {
         var dto = ValidUser();

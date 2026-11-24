@@ -36,8 +36,12 @@ public class IncidentResponseDto
     public bool HasPendingDuplicateFlag { get; set; }
 
     public int CreatedByUserId { get; set; }
+    // For display only ("Reported by"). Logic such as "is this my incident?" uses CreatedByUserId.
+    public string CreatedByUserName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public int? ApprovedByUserId { get; set; }
+    public DateTime? ApprovedAt { get; set; }
     public int? ClosedByUserId { get; set; }
     public DateTime? ClosedAt { get; set; }
 }

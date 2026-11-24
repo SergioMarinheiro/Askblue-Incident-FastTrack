@@ -54,6 +54,12 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ApprovedByUserId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("ClosedAt")
                         .HasColumnType("datetime2");
 
@@ -127,6 +133,8 @@ namespace ApiIncidentFastTrack.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApprovedByUserId");
 
                     b.HasIndex("ClosedByUserId");
 
@@ -366,10 +374,6 @@ namespace ApiIncidentFastTrack.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -486,6 +490,11 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.Incident", b =>
                 {
+                    b.HasOne("ApiIncidentFastTrack.Models.User", "ApprovedByUser")
+                        .WithMany("ApprovedIncidents")
+                        .HasForeignKey("ApprovedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ApiIncidentFastTrack.Models.User", "ClosedByUser")
                         .WithMany("ClosedIncidents")
                         .HasForeignKey("ClosedByUserId")
@@ -517,6 +526,8 @@ namespace ApiIncidentFastTrack.Data.Migrations
                         .WithMany("Incidents")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ApprovedByUser");
 
                     b.Navigation("ClosedByUser");
 
@@ -700,6 +711,8 @@ namespace ApiIncidentFastTrack.Data.Migrations
 
             modelBuilder.Entity("ApiIncidentFastTrack.Models.User", b =>
                 {
+                    b.Navigation("ApprovedIncidents");
+
                     b.Navigation("Attachments");
 
                     b.Navigation("ClosedIncidents");

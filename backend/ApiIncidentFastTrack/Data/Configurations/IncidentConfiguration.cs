@@ -46,6 +46,12 @@ public class IncidentConfiguration : IEntityTypeConfiguration<Incident>
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(i => i.ApprovedByUser)
+            .WithMany(u => u.ApprovedIncidents)
+            .HasForeignKey(i => i.ApprovedByUserId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(i => i.Store)
             .WithMany(s => s.Incidents)
             .HasForeignKey(i => i.StoreId)

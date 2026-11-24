@@ -6,7 +6,6 @@ public class ResolutionType : BaseDomainModel
     public int CompanyId { get; set; }
 
     public string Name { get; set; } = string.Empty;
-    public string? Description { get; set; }
 
     // On approval: true -> AwaitingPayment, false -> AwaitingResolution
     public bool RequiresPayment { get; set; }

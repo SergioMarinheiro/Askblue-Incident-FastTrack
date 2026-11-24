@@ -1,7 +1,8 @@
+using ApiIncidentFastTrack.Auth;
 using ApiIncidentFastTrack.DTOs.Stores;
 using ApiIncidentFastTrack.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ApiIncidentFastTrack.Controllers;
 
@@ -23,11 +24,6 @@ public class StoreController : ControllerBase
     {
         var stores = await _storeService.GetStoresAsync(cancellationToken);
 
-        if(stores.IsNullOrEmpty())
-        {
-            return NotFound();
-        }
-
         return Ok(stores);
     }
 
@@ -36,23 +32,14 @@ public class StoreController : ControllerBase
     {
         var store = await _storeService.GetStoreByIdAsync(storeId, cancellationToken);
 
-        if(store == null)
-        {
-            return NotFound();
-        }
-
         return Ok(store);
     }
 
     [HttpPost]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateStore([FromBody] CreateStoreRequestDto request, CancellationToken cancellationToken)
     {
         var store = await _storeService.CreateStoreAsync(request, cancellationToken);
-
-        if (store is null)
-        {
-            return NotFound("The specified company does not exist.");
-        }
 
         return CreatedAtAction(
             nameof(GetStoreById),
@@ -62,14 +49,10 @@ public class StoreController : ControllerBase
     }
 
     [HttpDelete("{storeId:int}")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> DeleteStore(int storeId, CancellationToken cancellationToken)
     {
-        var deleted = await _storeService.DeleteStoreAsync(storeId, cancellationToken);
-
-        if(!deleted)
-        {
-            return NotFound();
-        }
+        await _storeService.DeleteStoreAsync(storeId, cancellationToken);
 
         return NoContent();
     }
@@ -79,23 +62,14 @@ public class StoreController : ControllerBase
     {
         var locations = await _storeService.GetLocationsAsync(storeId, cancellationToken);
 
-        if(locations.IsNullOrEmpty())
-        {
-            return NotFound();
-        }
-
         return Ok(locations);
     }
 
     [HttpPost("{storeId:int}/locations")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateLocation(int storeId, [FromBody] CreateLocationRequestDto request, CancellationToken cancellationToken)
     {
         var location = await _storeService.CreateLocationAsync(storeId, request, cancellationToken);
-
-        if (location is null)
-        {
-            return NotFound();
-        }
 
         return CreatedAtAction(
             nameof(GetLocations),
@@ -105,14 +79,10 @@ public class StoreController : ControllerBase
     }
 
     [HttpDelete("{storeId:int}/locations/{locationId:int}")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> DeleteLocation(int storeId, int locationId, CancellationToken cancellationToken)
     {
-        var deleted = await _storeService.DeleteLocationAsync(storeId, locationId, cancellationToken);
-
-        if(!deleted)
-        {
-            return NotFound();
-        }
+        await _storeService.DeleteLocationAsync(storeId, locationId, cancellationToken);
 
         return NoContent();
     }

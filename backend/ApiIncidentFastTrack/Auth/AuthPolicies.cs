@@ -13,4 +13,7 @@ public static class AuthPolicies
 
     // Admin, SuperAdmin
     public const string AdminOrAbove = "AdminOrAbove";
+
+    // SuperAdmin only (AskBlue platform staff), e.g. managing companies.
+    public const string SuperAdminOnly = "SuperAdminOnly";
 }

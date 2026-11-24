@@ -3,12 +3,11 @@ using ApiIncidentFastTrack.DTOs.Users;
 using ApiIncidentFastTrack.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ApiIncidentFastTrack.Controllers;
 
 // List/get: Manager, Admin (own company), SuperAdmin.
-// Create/update: Admin (own company), SuperAdmin.
+// Create/update/reset password: Admin (own company), SuperAdmin.
 // Delete (soft): Manager (Staff only), Admin (any user in own company), SuperAdmin (any user).
 [ApiController]
 [Route("api/users")]
@@ -27,11 +26,6 @@ public class UserController : ControllerBase
     {
         var users = await _userService.GetUsersAsync(cancellationToken);
 
-        if(users.IsNullOrEmpty())
-        {
-            return NotFound();
-        }
-
         return Ok(users);
     }
 
@@ -41,11 +35,6 @@ public class UserController : ControllerBase
     {
         var user = await _userService.GetUserByIdAsync(userId, cancellationToken);
 
-        if(user == null)
-        {
-            return NotFound();
-        }
-
         return Ok(user);
     }
 
@@ -53,53 +42,40 @@ public class UserController : ControllerBase
     [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request, CancellationToken cancellationToken)
     {
-        try
-        {
-            var user = await _userService.CreateUserAsync(request, cancellationToken);
+        var user = await _userService.CreateUserAsync(request, cancellationToken);
 
-            return CreatedAtAction(
-                nameof(GetUserById),
-                new { userId = user.UserId },
-                user
-            );
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new { message = exception.Message });
-        }
+        return CreatedAtAction(
+            nameof(GetUserById),
+            new { userId = user.UserId },
+            user
+        );
     }
 
     [HttpPut("{userId:int}")]
     [Authorize(Policy = AuthPolicies.AdminOrAbove)]
     public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequestDto request, CancellationToken cancellationToken)
     {
-        try
-        {
-            var user = await _userService.UpdateUserAsync(userId, request, cancellationToken);
+        var user = await _userService.UpdateUserAsync(userId, request, cancellationToken);
 
-            if (user is null)
-            {
-                return NotFound();
-            }
+        return Ok(user);
+    }
 
-            return Ok(user);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new { message = exception.Message });
-        }
+    // Users never reset their own password: an Admin (own company) or SuperAdmin does it for them.
+    [HttpPut("{userId:int}/password")]
+    [Authorize(Policy = AuthPolicies.AdminOrAbove)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ResetPassword(int userId, [FromBody] ResetUserPasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        await _userService.ResetPasswordAsync(userId, request, cancellationToken);
+
+        return NoContent();
     }
 
     [HttpDelete("{userId:int}")]
     [Authorize(Policy = AuthPolicies.ManagerOrAbove)]
     public async Task<IActionResult> DeleteUser(int userId, CancellationToken cancellationToken)
     {
-        var deleted = await _userService.DeleteUserAsync(userId, cancellationToken);
-
-        if (!deleted)
-        {
-            return NotFound();
-        }
+        await _userService.DeleteUserAsync(userId, cancellationToken);
 
         return NoContent();
     }

@@ -53,4 +53,9 @@ public class CreateIncidentRequestDto
     // Invariant culture: on a pt-PT machine "9999999999999999.99" would otherwise fail to parse.
     [Range(typeof(decimal), "0", "9999999999999999.99", ParseLimitsInInvariantCulture = true)]
     public decimal? EstimatedCompensationAmount { get; set; }
+
+    // Only accepted from a SuperAdmin, who has no company of their own (required for them).
+    // Any other caller sending it gets 403; their company comes from the JWT.
+    [Range(1, int.MaxValue)]
+    public int? CompanyId { get; set; }
 }
