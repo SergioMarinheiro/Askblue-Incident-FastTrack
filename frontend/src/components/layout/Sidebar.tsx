@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { NavLink } from 'react-router'
+import { Link, NavLink } from 'react-router'
 import { X } from 'lucide-react'
 import { USER_LIST_ROLES } from '@/features/users/permissions'
 import { cn } from '@/lib/cn'
@@ -100,9 +100,10 @@ function SidebarContent() {
 
   return (
     <>
-      <div className="px-2">
+      {/* The product name doubles as a "home" link, as is usual for the name or logo at the top of an app. */}
+      <Link to="/overview" className="block rounded-lg px-2 py-1 hover:bg-white/10">
         <Logo />
-      </div>
+      </Link>
 
       {/* The main action, shown as a button so it stands out from the menu: white on the blue sidebar. */}
       <NavLink

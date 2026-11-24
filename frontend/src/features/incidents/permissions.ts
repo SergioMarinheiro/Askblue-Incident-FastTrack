@@ -21,8 +21,6 @@ export type IncidentPermissions = {
   approve: boolean
   /** Show the Approve button, enabled or not (a reviewer looking at an incident awaiting approval). */
   showApprove: boolean
-  /** Why approve is not possible right now, if a reviewer would otherwise expect it. */
-  approveBlockedReason: string | null
   reject: boolean
   sendBack: boolean
   reviewDuplicates: boolean
@@ -48,8 +46,6 @@ export function incidentPermissions(user: CurrentUser | null, incident: Incident
           : false
 
   const canApproveBase = isReviewer && awaitingApproval
-  let approveBlockedReason: string | null = null
-  if (canApproveBase && !isCreator && incident.hasPendingDuplicateFlag) approveBlockedReason = 'Review the possible duplicates first.'
 
   return {
     isCreator,
@@ -57,10 +53,9 @@ export function incidentPermissions(user: CurrentUser | null, incident: Incident
     submit: isCreator && (status === S.New || status === S.SentBack),
     deleteDraft: isCreator && status === S.New,
     changeFiles: FILES_MAY_CHANGE.includes(status),
-    // The creator sees the button disabled, without a message.
-    approve: canApproveBase && !isCreator && approveBlockedReason === null,
+    // Shown but disabled, without a message, for the creator and while a duplicate flag is pending.
+    approve: canApproveBase && !isCreator && !incident.hasPendingDuplicateFlag,
     showApprove: canApproveBase,
-    approveBlockedReason,
     reject: isReviewer && awaitingApproval,
     sendBack: isReviewer && awaitingApproval,
     reviewDuplicates: isReviewer && awaitingApproval && incident.hasPendingDuplicateFlag,

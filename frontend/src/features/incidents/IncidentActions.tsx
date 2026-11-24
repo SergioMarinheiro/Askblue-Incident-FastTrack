@@ -156,17 +156,15 @@ export function IncidentActions({ incident, perms }: { incident: Incident; perms
     )
   if (perms.showApprove)
     buttons.push(
-      <div key="approve">
-        <button
-          type="button"
-          onClick={() => setDialog('approve')}
-          disabled={!perms.approve}
-          className={cn(actionButton, tones.primary)}
-        >
-          Approve
-        </button>
-        {perms.approveBlockedReason && <p className="mt-1 text-xs text-muted">{perms.approveBlockedReason}</p>}
-      </div>,
+      <button
+        key="approve"
+        type="button"
+        onClick={() => setDialog('approve')}
+        disabled={!perms.approve}
+        className={cn(actionButton, tones.primary)}
+      >
+        Approve
+      </button>,
     )
   if (perms.reviewDuplicates) {
     buttons.push(
