@@ -252,7 +252,7 @@ function NewCompanyModal({ onClose, onCreated }: { onClose: () => void; onCreate
             <span>{formError}</span>
           </div>
         )}
-        <FormField id="companyName" label="Name" required error={error ?? undefined} hint="The name can't be changed later.">
+        <FormField id="companyName" label="Name" required error={error ?? undefined}>
           <input
             id="companyName"
             autoFocus
