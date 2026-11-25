@@ -115,63 +115,103 @@ export function UsersPage() {
         ) : filtered.length === 0 ? (
           <EmptyState title="No users found" description={search || roleFilter ? 'Try a different search or role.' : undefined} />
         ) : (
-          <div className="overflow-x-auto px-3 pb-3">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead>
-                <tr className="bg-surface text-xs font-semibold tracking-wide text-muted uppercase">
-                  <th className="rounded-l-lg px-3 py-3">Name</th>
-                  <th className="px-3 py-3">Email</th>
-                  <th className="px-3 py-3">Role</th>
-                  {isSuperAdmin && <th className="px-3 py-3">Company</th>}
-                  <th className="rounded-r-lg px-3 py-3 text-right">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {filtered.map((u) => {
-                  const p = userPermissions(me, u)
-                  return (
-                    <tr key={u.userId} className="hover:bg-surface/60">
-                      <td className="px-3 py-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar name={u.fullName} variant="light" />
-                          <span className="font-medium">
-                            {u.fullName}
-                            {p.isSelf && <span className="ml-2 text-xs font-normal text-muted">(you)</span>}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 text-ink/90">{u.email}</td>
-                      <td className="px-3 py-3">
-                        <Badge tone={ROLE_TONE[u.role]}>{ROLE_LABELS[u.role]}</Badge>
-                      </td>
-                      {isSuperAdmin && <td className="px-3 py-3 text-ink/90">{companyName(u.companyId)}</td>}
-                      <td className="px-3 py-3">
-                        <div className="flex justify-end gap-1">
-                          {p.edit && (
-                            <IconButton label={`Edit ${u.fullName}`} onClick={() => setDialog({ kind: 'edit', user: u })}>
-                              <Pencil className="size-4" aria-hidden />
-                            </IconButton>
-                          )}
-                          {p.resetPassword && (
-                            <IconButton label={`Reset password for ${u.fullName}`} onClick={() => setDialog({ kind: 'reset', user: u })}>
-                              <KeyRound className="size-4" aria-hidden />
-                            </IconButton>
-                          )}
-                          {p.delete && (
-                            <IconButton label={`Delete ${u.fullName}`} danger onClick={() => setDialog({ kind: 'delete', user: u })}>
-                              <Trash2 className="size-4" aria-hidden />
-                            </IconButton>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="space-y-3 px-3 pb-3 sm:hidden">
+              {filtered.map((u) => {
+                const p = userPermissions(me, u)
+                return (
+                  <article key={u.userId} className="rounded-lg border border-line p-3">
+                    <div className="flex items-start gap-3">
+                      <Avatar name={u.fullName} variant="light" />
+                      <div className="min-w-0 flex-1">
+                        <p className="break-words font-medium">
+                          {u.fullName}
+                          {p.isSelf && <span className="ml-2 text-xs font-normal text-muted">(you)</span>}
+                        </p>
+                        <p className="mt-1 break-all text-sm text-muted">{u.email}</p>
+                      </div>
+                      <Badge tone={ROLE_TONE[u.role]}>{ROLE_LABELS[u.role]}</Badge>
+                    </div>
+                    {isSuperAdmin && <p className="mt-3 break-words text-sm text-ink/90">Company: {companyName(u.companyId)}</p>}
+                    <div className="mt-3 flex justify-end gap-1 border-t border-line pt-2">
+                      {p.edit && (
+                        <IconButton label={`Edit ${u.fullName}`} onClick={() => setDialog({ kind: 'edit', user: u })}>
+                          <Pencil className="size-4" aria-hidden />
+                        </IconButton>
+                      )}
+                      {p.resetPassword && (
+                        <IconButton label={`Reset password for ${u.fullName}`} onClick={() => setDialog({ kind: 'reset', user: u })}>
+                          <KeyRound className="size-4" aria-hidden />
+                        </IconButton>
+                      )}
+                      {p.delete && (
+                        <IconButton label={`Delete ${u.fullName}`} danger onClick={() => setDialog({ kind: 'delete', user: u })}>
+                          <Trash2 className="size-4" aria-hidden />
+                        </IconButton>
+                      )}
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+            <div className="hidden overflow-x-auto px-3 pb-3 sm:block">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead>
+                  <tr className="bg-surface text-xs font-semibold tracking-wide text-muted uppercase">
+                    <th className="rounded-l-lg px-3 py-3">Name</th>
+                    <th className="px-3 py-3">Email</th>
+                    <th className="px-3 py-3">Role</th>
+                    {isSuperAdmin && <th className="px-3 py-3">Company</th>}
+                    <th className="rounded-r-lg px-3 py-3 text-right">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {filtered.map((u) => {
+                    const p = userPermissions(me, u)
+                    return (
+                      <tr key={u.userId} className="hover:bg-surface/60">
+                        <td className="px-3 py-3">
+                          <div className="flex items-center gap-3">
+                            <Avatar name={u.fullName} variant="light" />
+                            <span className="font-medium">
+                              {u.fullName}
+                              {p.isSelf && <span className="ml-2 text-xs font-normal text-muted">(you)</span>}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-3 text-ink/90">{u.email}</td>
+                        <td className="px-3 py-3">
+                          <Badge tone={ROLE_TONE[u.role]}>{ROLE_LABELS[u.role]}</Badge>
+                        </td>
+                        {isSuperAdmin && <td className="px-3 py-3 text-ink/90">{companyName(u.companyId)}</td>}
+                        <td className="px-3 py-3">
+                          <div className="flex justify-end gap-1">
+                            {p.edit && (
+                              <IconButton label={`Edit ${u.fullName}`} onClick={() => setDialog({ kind: 'edit', user: u })}>
+                                <Pencil className="size-4" aria-hidden />
+                              </IconButton>
+                            )}
+                            {p.resetPassword && (
+                              <IconButton label={`Reset password for ${u.fullName}`} onClick={() => setDialog({ kind: 'reset', user: u })}>
+                                <KeyRound className="size-4" aria-hidden />
+                              </IconButton>
+                            )}
+                            {p.delete && (
+                              <IconButton label={`Delete ${u.fullName}`} danger onClick={() => setDialog({ kind: 'delete', user: u })}>
+                                <Trash2 className="size-4" aria-hidden />
+                              </IconButton>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </Card>
 

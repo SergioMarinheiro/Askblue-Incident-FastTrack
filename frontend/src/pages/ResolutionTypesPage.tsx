@@ -98,50 +98,77 @@ export function ResolutionTypesPage() {
             description="Incidents can't be submitted until at least one exists. Common ones: Compensation, HR, Legal, Insurance."
           />
         ) : (
-          <div className="overflow-x-auto px-3 pb-3">
-            <table className="w-full min-w-[520px] table-fixed text-left text-sm">
-              <colgroup>
-                <col className={isSuperAdmin ? 'w-[35%]' : 'w-[50%]'} />
-                <col className={isSuperAdmin ? 'w-[30%]' : 'w-[40%]'} />
-                {isSuperAdmin && <col className="w-[25%]" />}
-                <col className="w-[10%]" />
-              </colgroup>
-              <thead>
-                <tr className="bg-surface text-xs font-semibold tracking-wide text-muted uppercase">
-                  <th className="rounded-l-lg px-3 py-3">Name</th>
-                  <th className="px-3 py-3">After approval</th>
-                  {isSuperAdmin && <th className="px-3 py-3">Company</th>}
-                  <th className="rounded-r-lg px-3 py-3">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {rows.map((r) => (
-                  <tr key={r.resolutionTypeId} className="hover:bg-surface/60">
-                    <td className="truncate px-3 py-3.5 font-medium" title={r.name}>
-                      {r.name}
-                    </td>
-                    <td className="px-3 py-3.5">
-                      {r.requiresPayment ? <Badge tone="violet">Awaiting payment</Badge> : <Badge tone="blue">Awaiting resolution</Badge>}
-                    </td>
-                    {isSuperAdmin && <td className="truncate px-3 py-3.5 text-ink/90">{companyName(r.companyId)}</td>}
-                    <td className="px-3 py-3.5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setDialog({ kind: 'edit', type: r })}
-                        aria-label={`Edit ${r.name}`}
-                        title="Edit"
-                        className="rounded-md p-2 text-muted hover:bg-brand-50 hover:text-brand-600"
-                      >
-                        <Pencil className="size-4" aria-hidden />
-                      </button>
-                    </td>
+          <>
+            <div className="space-y-3 px-3 pb-3 sm:hidden">
+              {rows.map((r) => (
+                <article key={r.resolutionTypeId} className="rounded-lg border border-line p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="break-words font-medium">{r.name}</p>
+                      <p className="mt-2 text-xs font-semibold tracking-wide text-muted uppercase">After approval</p>
+                      <div className="mt-1">
+                        {r.requiresPayment ? <Badge tone="violet">Awaiting payment</Badge> : <Badge tone="blue">Awaiting resolution</Badge>}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setDialog({ kind: 'edit', type: r })}
+                      aria-label={`Edit ${r.name}`}
+                      title="Edit"
+                      className="shrink-0 rounded-md p-2 text-muted hover:bg-brand-50 hover:text-brand-600"
+                    >
+                      <Pencil className="size-4" aria-hidden />
+                    </button>
+                  </div>
+                  {isSuperAdmin && <p className="mt-3 break-words border-t border-line pt-2 text-sm text-ink/90">Company: {companyName(r.companyId)}</p>}
+                </article>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto px-3 pb-3 sm:block">
+              <table className="w-full min-w-[520px] table-fixed text-left text-sm">
+                <colgroup>
+                  <col className={isSuperAdmin ? 'w-[35%]' : 'w-[50%]'} />
+                  <col className={isSuperAdmin ? 'w-[30%]' : 'w-[40%]'} />
+                  {isSuperAdmin && <col className="w-[25%]" />}
+                  <col className="w-[10%]" />
+                </colgroup>
+                <thead>
+                  <tr className="bg-surface text-xs font-semibold tracking-wide text-muted uppercase">
+                    <th className="rounded-l-lg px-3 py-3">Name</th>
+                    <th className="px-3 py-3">After approval</th>
+                    {isSuperAdmin && <th className="px-3 py-3">Company</th>}
+                    <th className="rounded-r-lg px-3 py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {rows.map((r) => (
+                    <tr key={r.resolutionTypeId} className="hover:bg-surface/60">
+                      <td className="truncate px-3 py-3.5 font-medium" title={r.name}>
+                        {r.name}
+                      </td>
+                      <td className="px-3 py-3.5">
+                        {r.requiresPayment ? <Badge tone="violet">Awaiting payment</Badge> : <Badge tone="blue">Awaiting resolution</Badge>}
+                      </td>
+                      {isSuperAdmin && <td className="truncate px-3 py-3.5 text-ink/90">{companyName(r.companyId)}</td>}
+                      <td className="px-3 py-3.5 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setDialog({ kind: 'edit', type: r })}
+                          aria-label={`Edit ${r.name}`}
+                          title="Edit"
+                          className="rounded-md p-2 text-muted hover:bg-brand-50 hover:text-brand-600"
+                        >
+                          <Pencil className="size-4" aria-hidden />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </Card>
 
