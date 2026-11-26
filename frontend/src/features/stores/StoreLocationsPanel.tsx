@@ -86,7 +86,6 @@ export function StoreLocationsPanel({ store, companyName, onStoreDeleted }: Prop
       {/* Locations */}
       <div className="px-6 py-5">
         <h3 className="text-sm font-semibold">Locations in this store</h3>
-        <p className="mt-0.5 text-xs text-muted">Where in the store an incident can happen, e.g. Checkout area, Warehouse, Car park.</p>
 
         <form onSubmit={handleAdd} className="mt-4 flex gap-2">
           <label htmlFor="newLocation" className="sr-only">
@@ -113,11 +112,7 @@ export function StoreLocationsPanel({ store, companyName, onStoreDeleted }: Prop
             <LoadingState label="Loading locations…" />
           ) : locations.isError ? (
             <ErrorState message={locations.error.message} onRetry={() => locations.refetch()} />
-          ) : sorted.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-line px-4 py-6 text-center text-sm text-muted">
-              No locations yet. Incidents can't be submitted for this store until it has at least one.
-            </p>
-          ) : (
+          ) : sorted.length === 0 ? null : (
             <ul className="divide-y divide-line rounded-lg border border-line">
               {sorted.map((l) => (
                 <li key={l.locationId} className="flex items-center gap-3 px-3 py-2.5">
