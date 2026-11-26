@@ -3,6 +3,8 @@ import { Navigate, useLocation, useNavigate } from 'react-router'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useAuth } from '@/auth/useAuth'
 import { ApiError } from '@/lib/api'
+import askblueLogoWhite from '@/assets/askblue-logo-negativo-rgb.png'
+import { Logo } from '@/components/layout/Logo'
 
 export function LoginPage() {
   const { user, login } = useAuth()
@@ -32,11 +34,9 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-16 items-center gap-3 bg-navy-900 px-8">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">
-          IF
-        </div>
-        <span className="font-semibold text-white">Incident FastTrack</span>
+      <header className="flex h-16 items-center justify-between gap-4 bg-brand-600 px-8">
+        <Logo />
+        <img src={askblueLogoWhite} alt="AskBlue" className="h-7 w-auto" />
       </header>
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
